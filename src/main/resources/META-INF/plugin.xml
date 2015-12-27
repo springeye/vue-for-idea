@@ -1,0 +1,38 @@
+<idea-plugin version="2">
+  <id>io.j99.idea.vue</id>
+  <name>Vue-for-idea</name>
+  <version>1.0</version>
+  <vendor email="henjue@gmail.com" url="https://github.com/henjue/vue-for-idea"/>
+
+  <description><![CDATA[
+       Support for Vue File language.
+    ]]></description>
+
+  <change-notes><![CDATA[
+      20151212:
+        Syntax checking and highlighting Using HTML
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="99.18"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+  <depends>com.intellij.modules.xml</depends>
+  <depends>com.intellij.modules.lang</depends>
+  <depends>JavaScript</depends>
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+    <fileTypeFactory implementation="io.j99.idea.vue.VueFileTypeFactory"/>
+    <syntaxHighlighter key="Vue" implementationClass="io.j99.idea.vue.highlighter.VueSyntaxHighlighter"/>
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+</idea-plugin>
