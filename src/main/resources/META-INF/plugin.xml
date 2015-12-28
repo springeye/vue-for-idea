@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>io.j99.idea.vue</id>
   <name>Vue-for-idea</name>
-  <version>1.0</version>
+  <version>1.0.1</version>
   <vendor email="henjue@gmail.com" url="https://github.com/henjue/vue-for-idea"/>
 
   <description><![CDATA[
@@ -25,10 +25,16 @@
   <depends>com.intellij.modules.xml</depends>
   <depends>com.intellij.modules.lang</depends>
   <depends>JavaScript</depends>
+  <project-components>
+    <component>
+      <implementation-class>io.j99.idea.vue.component.VueComponent</implementation-class>
+    </component>
+  </project-components>
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
     <fileTypeFactory implementation="io.j99.idea.vue.VueFileTypeFactory"/>
     <syntaxHighlighter key="Vue" implementationClass="io.j99.idea.vue.highlighter.VueSyntaxHighlighter"/>
+    <xml.attributeDescriptorsProvider implementation="io.j99.idea.vue.component.VueAttributeDescriptorProvider"/>
   </extensions>
 
   <actions>
