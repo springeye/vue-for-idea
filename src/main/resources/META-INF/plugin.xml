@@ -1,11 +1,11 @@
 <idea-plugin version="2">
   <id>io.j99.idea.vue</id>
-  <name>Vue-for-idea</name>
+  <name>vue-for-idea</name>
   <version>1.0.1</version>
   <vendor email="henjue@gmail.com" url="https://github.com/henjue/vue-for-idea"/>
 
   <description><![CDATA[
-       Support for Vue File language.
+       Support for VueJS.
     ]]></description>
 
   <change-notes><![CDATA[
