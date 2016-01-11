@@ -9,12 +9,16 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      20151229:
-        Create Vue File Template Action
-      20151228:
-        support Vue AutoComplete for "v-xxxx" attr and "@xxxx" event;example:v-bind,v-for,v-show,@click,@load......
-      20151212:
-        Syntax checking and highlighting Using HTML
+        <html>
+        <dl>
+            <dt>20151229</dt>
+            <dd>Create Vue File Template Action</dd>
+            <dt>20151228</dt>
+            <dd>support Vue AutoComplete for "v-xxxx" attr and "@xxxx" event;example:v-bind,v-for,v-show,@click,@load......</dd>
+            <dt>20151212</dt>
+            <dd>Syntax checking and highlighting Using HTML</dd>
+        </dl>
+        </html>
     ]]>
   </change-notes>
 
