@@ -8,8 +8,7 @@ import com.intellij.openapi.util.IconLoader
 object VueIcons {
 
     /** The path to the Markdown icon.  */
-    val VUE_ICON_PATH = "/io/j99/idea/vue/vue.png"
-
+    var PATH="/io/j99/idea/vue/icons/"
     /** The Markdown [Icon].  */
-    @JvmField val VUE_ICON = IconLoader.getIcon(VUE_ICON_PATH)
+    @JvmField val VUE_ICON = IconLoader.getIcon(PATH+ "logo.png")
 }

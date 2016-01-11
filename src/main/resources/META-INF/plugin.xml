@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>io.j99.idea.vue</id>
   <name>vue-for-idea</name>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <vendor email="henjue@gmail.com" url="https://github.com/henjue/vue-for-idea"/>
 
   <description><![CDATA[
@@ -9,6 +9,8 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      20151229:
+        Create Vue File Template Action
       20151228:
         support Vue AutoComplete for "v-xxxx" attr and "@xxxx" event;example:v-bind,v-for,v-show,@click,@load......
       20151212:
