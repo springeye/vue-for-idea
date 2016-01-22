@@ -53,7 +53,7 @@ crashlytics-build.properties
 
 # IntelliJ
 /out/
-
+src/main/gen/
 # mpeltonen/sbt-idea plugin
 /src/main/java/io/j99/idea/vue/lexer/idea-flex.skeleton
 .idea_modules/
