@@ -10,6 +10,10 @@ import java.util.ResourceBundle;
  * Created by android on 15-12-25.
  */
 public class VueBundle {
+    @NonNls
+    public static final String LOG_ID = "#com.wix.vue";
+
+
     /** The {@link ResourceBundle} path. */
     @NonNls
     protected static final String BUNDLE_NAME = "io.j99.idea.vue.localization.strings";

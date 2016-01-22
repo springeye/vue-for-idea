@@ -72,7 +72,7 @@ class VueComponent private constructor(project: Project) : AbstractProjectCompon
     }
 
     override fun getComponentName(): String {
-        return "VueProjectComponent"
+        return "VueProjectSettingsComponent"
     }
 
 }
