@@ -9,7 +9,6 @@ final class VueCliBuilder {
 
     public static final String V = "-V";
     public static final String LIST = "list";
-    public static final String INIT = "init";
     private VueCliBuilder() {
     }
     @NotNull

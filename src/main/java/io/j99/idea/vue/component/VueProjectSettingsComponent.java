@@ -24,7 +24,7 @@ public class VueProjectSettingsComponent implements ProjectComponent {
     public String nodeInterpreter;
     public boolean treatAsWarnings;
 
-    public static final String PLUGIN_NAME = "React-Templates plugin";
+    public static final String PLUGIN_NAME = "vue-for-idea";
 
     public VueProjectSettingsComponent(Project project) {
         this.project = project;
@@ -77,7 +77,7 @@ public class VueProjectSettingsComponent implements ProjectComponent {
 //        if (!status) {
 //            return false;
 //        }
-        status = validateField("React-Templates bin", settingStorage.vueExePath, false, false, true);
+        status = validateField("vue-cli bin", settingStorage.vueExePath, false, false, true);
         if (!status) {
             return false;
         }

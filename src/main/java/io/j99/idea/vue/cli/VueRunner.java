@@ -41,6 +41,7 @@ public final class VueRunner {
         GeneralCommandLine commandLine = VueCliBuilder.version(settings);
         return NodeRunner.execute(commandLine, TIME_OUT);
     }
+    @NotNull
     public static ProcessOutput template(@NotNull VueSettings settings) throws ExecutionException {
         GeneralCommandLine commandLine = VueCliBuilder.list(settings);
         return NodeRunner.execute(commandLine, TIME_OUT);

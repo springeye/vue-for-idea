@@ -26,7 +26,7 @@ public abstract class VueProjectTemplate {
         this.name = name;
         this.description = description;
     }
-    public abstract Collection<VirtualFile> generateProject(@NotNull final VueProjectWizardData.Sdk sdk,
+    public abstract Collection<VirtualFile> generateProject(@NotNull final VueProjectWizardData data,
                                                             @NotNull final Module module,
                                                             @NotNull final VirtualFile baseDir)
             throws IOException;
