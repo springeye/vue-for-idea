@@ -1,5 +1,6 @@
 package io.j99.idea.vue.cli;
 
+import b.h.L;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import io.j99.idea.vue.cli.nodejs.NodeRunner;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,13 @@ final class VueCliBuilder {
     private VueCliBuilder() {
     }
     @NotNull
+    static GeneralCommandLine list(@NotNull VueSettings settings) {
+        GeneralCommandLine commandLine = createCommandLine(settings);
+        commandLine.addParameter(LIST);
+        return commandLine;
+    }
+
+    @NotNull
     static GeneralCommandLine version(@NotNull VueSettings settings) {
         GeneralCommandLine commandLine = createCommandLine(settings);
         commandLine.addParameter(V);
@@ -23,18 +31,4 @@ final class VueCliBuilder {
         return NodeRunner.createCommandLine(settings.cwd, settings.node, settings.vueExePath);
     }
 
-    @NotNull
-    static GeneralCommandLine createCommandLineBuild(@NotNull VueSettings settings) {
-        GeneralCommandLine commandLine = createCommandLine(settings);
-        commandLine.addParameter(settings.targetFile);
-        return commandLine;
-    }
-
-    @NotNull
-    static GeneralCommandLine createCommandLineValidate(@NotNull VueSettings settings) {
-        GeneralCommandLine commandLine = createCommandLine(settings);
-
-        commandLine.addParameter(settings.targetFile);
-        return commandLine;
-    }
 }

@@ -7,14 +7,12 @@ public class VueSettings {
     public String vueExePath;
     public String config;
     public String cwd;
-    public String targetFile;
 
-    public static VueSettings build(@NotNull String cwd, @NotNull String nodeInterpreter, @NotNull String rtBin, @NotNull String path) {
+    public static VueSettings build(@NotNull String cwd, @NotNull String node, @NotNull String vue) {
         VueSettings settings = new VueSettings();
         settings.cwd = cwd;
-        settings.vueExePath = rtBin;
-        settings.node = nodeInterpreter;
-        settings.targetFile = path;
+        settings.vueExePath = vue;
+        settings.node = node;
         return settings;
     }
 
@@ -25,14 +23,9 @@ public class VueSettings {
         return s;
     }
 
-    public static VueSettings build(@NotNull SettingStorage settingStorage, @NotNull String cwd, @NotNull String path) {
+    public static VueSettings build(@NotNull SettingStorage settingStorage, @NotNull String cwd) {
         VueSettings s = build(settingStorage);
         s.cwd = cwd;
-        s.targetFile = path;
         return s;
-    }
-
-    public static VueSettings build(@NotNull String cwd, @NotNull String nodeInterpreter, @NotNull String rtBin) {
-        return build(cwd, nodeInterpreter, rtBin, "");
     }
 }

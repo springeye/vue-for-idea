@@ -18,19 +18,23 @@ public final class NodeRunner {
 
     private static final Logger LOG = Logger.getInstance(NodeRunner.class);
 
-    private static final int TIME_OUT = (int) TimeUnit.SECONDS.toMillis(120L);
+    public static final int TIME_OUT = (int) TimeUnit.SECONDS.toMillis(120L);
 
     /**
      * @param cwd working directory
      * @param node node interpreter path
      * @param exe node executable to run
-     * @return command line to execute
+     * @return command line to sdk
      */
     @NotNull
     public static GeneralCommandLine createCommandLine(@NotNull String cwd, String node, String exe) {
         GeneralCommandLine commandLine = new GeneralCommandLine();
-        if (!new File(cwd).exists() || !new File(exe).exists()) {
-            throw new IllegalArgumentException("path doesn't exist");
+        if (!new File(cwd).exists()) {
+            throw new IllegalArgumentException("cwd: "+cwd +" doesn't exist");
+        }
+        if (!new File(exe).exists()) {
+            throw new IllegalArgumentException("exe: "+exe +" doesn't exist");
+
         }
         commandLine.setWorkDirectory(cwd);
         if (SystemInfo.isWindows) {
@@ -46,7 +50,7 @@ public final class NodeRunner {
     }
 
     /**
-     * @param commandLine command line to execute
+     * @param commandLine command line to sdk
      * @param timeoutInMilliseconds timeout
      * @return process output
      * @throws ExecutionException

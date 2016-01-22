@@ -23,6 +23,7 @@ public class SettingStorage implements PersistentStateComponent<SettingStorage> 
     protected Project project;
 
     public static SettingStorage getInstance(Project project) {
+        if(project==null)return null;
         SettingStorage settingStorage = ServiceManager.getService(project, SettingStorage.class);
         settingStorage.project = project;
         return settingStorage;

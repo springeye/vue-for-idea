@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.ProcessOutput;
+import com.intellij.internal.statistic.UsageTrigger;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.diagnostic.Logger;
 import io.j99.idea.vue.component.VueProjectSettingsComponent;
@@ -40,7 +41,20 @@ public final class VueRunner {
         GeneralCommandLine commandLine = VueCliBuilder.version(settings);
         return NodeRunner.execute(commandLine, TIME_OUT);
     }
-
+    public static ProcessOutput template(@NotNull VueSettings settings) throws ExecutionException {
+        GeneralCommandLine commandLine = VueCliBuilder.list(settings);
+        return NodeRunner.execute(commandLine, TIME_OUT);
+    }
+    public static List<String> listTemplate(@NotNull VueSettings settings) throws ExecutionException {
+        ProcessOutput out = template(settings);
+        ArrayList<String> list=new ArrayList<>();
+        if (out.getExitCode() == 0) {
+            list.addAll(out.getStdoutLines());
+        }else{
+            UsageTrigger.trigger(out.getStderr());
+        }
+        return list;
+    }
     @NotNull
     public static String runVersion(@NotNull VueSettings settings) throws ExecutionException {
         if (!new File(settings.vueExePath).exists()) {
