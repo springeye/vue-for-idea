@@ -11,6 +11,8 @@
   <change-notes><![CDATA[
         <html>
         <dl>
+            <dt>20160123</dt>
+            <dd>New Vue Project Wizard</dd>
             <dt>20151229</dt>
             <dd>Create Vue File Template Action</dd>
             <dt>20151228</dt>
@@ -37,14 +39,25 @@
     <component>
       <implementation-class>io.j99.idea.vue.component.VueComponent</implementation-class>
     </component>
+    <component>
+      <implementation-class>io.j99.idea.vue.component.VueProjectSettingsComponent</implementation-class>
+    </component>
   </project-components>
   <actions>
     <action class="io.j99.idea.vue.action.NewVueFileAction" id="Vue.NewVueFile" text="Vue File" description="Create new Vue File">
-      <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="first" />
+      <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="before" />
     </action>
+    <group id="vue.tools" text="Vue" description="Vue Menu">
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+      <action class="io.j99.idea.vue.action.InstallAction"  id="Vue.Install" text="Vue Install" description="Install Dependencies"/>
+    </group>
+
   </actions>
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
+    <applicationService serviceImplementation="io.j99.idea.vue.settings.SettingStorage"/>
+    <projectConfigurable groupId="language" id="vue.settings" instance="io.j99.idea.vue.settings.VueSettingsPage"/>
+    <moduleBuilder builderClass="io.j99.idea.vue.module.VueModuleBuilder"/>
     <fileTypeFactory implementation="io.j99.idea.vue.VueFileTypeFactory"/>
     <syntaxHighlighter key="Vue" implementationClass="io.j99.idea.vue.highlighter.VueSyntaxHighlighter"/>
     <xml.attributeDescriptorsProvider implementation="io.j99.idea.vue.component.VueAttributeDescriptorProvider"/>
