@@ -17,7 +17,7 @@ import java.io.File;
  * Created by apple on 16/1/22.
  */
 public class VueSdkUtils {
-    public static void initVueSdkControls(Project project, TextFieldWithBrowseButton dartSdkPathComponent, TextFieldWithBrowseButton vuePathTextWithBrowse) {
+    public static void initVueSdkControls(Project project, TextFieldWithBrowseButton nodePathTextWithBrowse, TextFieldWithBrowseButton vuePathTextWithBrowse) {
         final TextComponentAccessor<JTextField> nodeComponentAccessor = new TextComponentAccessor<JTextField>() {
             @Override
             public String getText(final JTextField component) {
@@ -67,14 +67,14 @@ public class VueSdkUtils {
             }
         };
         final ComponentWithBrowseButton.BrowseFolderActionListener<JTextField> browseNodeFolderListener =
-                new ComponentWithBrowseButton.BrowseFolderActionListener<JTextField>("Select Node path", null, dartSdkPathComponent, project,
+                new ComponentWithBrowseButton.BrowseFolderActionListener<JTextField>("Select Node path", null, nodePathTextWithBrowse, project,
                         FileChooserDescriptorFactory.createSingleFolderDescriptor(),
                         nodeComponentAccessor);
         final ComponentWithBrowseButton.BrowseFolderActionListener<JTextField> browseVueFolderListener =
                 new ComponentWithBrowseButton.BrowseFolderActionListener<JTextField>("Select vue path", null, vuePathTextWithBrowse, project,
                         FileChooserDescriptorFactory.createSingleFolderDescriptor(),
                         vueComponentAccessor);
-        dartSdkPathComponent.addBrowseFolderListener(project, browseNodeFolderListener);
+        nodePathTextWithBrowse.addBrowseFolderListener(project, browseNodeFolderListener);
         vuePathTextWithBrowse.addBrowseFolderListener(project, browseVueFolderListener);
     }
 }

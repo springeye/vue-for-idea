@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
  * Created by apple on 16/1/22.
  */
 public class VueProjectWizardData {
-    static class Sdk {
+    public static class Sdk {
         @NotNull public final String nodePath;
         @NotNull public final String vuePath;
 

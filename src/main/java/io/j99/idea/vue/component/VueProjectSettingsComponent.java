@@ -26,9 +26,9 @@ public class VueProjectSettingsComponent implements ProjectComponent {
 
     public static final String PLUGIN_NAME = "vue-for-idea";
 
-    public VueProjectSettingsComponent(Project project) {
+    public VueProjectSettingsComponent() {
         this.project = project;
-        settingStorage = SettingStorage.getInstance(project);
+        settingStorage = SettingStorage.getInstance();
     }
 
     @Override

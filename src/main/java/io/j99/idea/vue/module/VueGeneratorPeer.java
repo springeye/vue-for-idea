@@ -53,7 +53,8 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
     private JBLabel myErrorLabel; // shown in IntelliJ IDEA only
     private JBLabel myVueVersionLable;
     private TextFieldWithBrowseButton vuePathTextWithBrowse;
-    private java.util.Timer timer;
+    private java.util.Timer timer1;
+    private java.util.Timer timer2;
     private boolean valitedateNode=false;
     private boolean valitedateVue=false;
     public interface RunTaskCallback{
@@ -81,14 +82,15 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
     }
     public VueGeneratorPeer(VueProjectWizardData.Sdk sdk){
         this.sdk=sdk;
-        timer=new java.util.Timer(true);
+        timer1=new java.util.Timer(true);
+        timer2=new java.util.Timer(true);
         vuePathTextWithBrowse.setEnabled(false);
         myLoadingTemplatesPanel.setVisible(false);
         nodePathTextWithBrowse.getTextField().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(DocumentEvent documentEvent) {
-                timer.cancel();
-                timer=new Timer();
+                timer1.cancel();
+                timer1=new Timer();
                 String path = nodePathTextWithBrowse.getText().trim();
                 if(new File(path).isDirectory()||!new File(path).exists())return;
                 GeneralCommandLine cmd = new GeneralCommandLine();
@@ -113,15 +115,15 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
 
                     }
                 });
-                timer.schedule(task,1000);
+                timer1.schedule(task,1000);
 
             }
         });
         vuePathTextWithBrowse.getTextField().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(DocumentEvent documentEvent) {
-                timer.cancel();
-                timer=new Timer();
+                timer2.cancel();
+                timer2=new Timer();
                 String path = vuePathTextWithBrowse.getText().trim();
                 String nodePath = nodePathTextWithBrowse.getText().trim();
                 if(new File(path).isDirectory() || !new File(path).exists()){
@@ -149,14 +151,18 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
 
                     }
                 });
-                timer.schedule(task,1000);
+                timer2.schedule(task,1000);
             }
         });
-        if(sdk!=null) {
-            nodePathTextWithBrowse.setText(sdk.nodePath);
-            vuePathTextWithBrowse.setText(sdk.vuePath);
-        }
         VueSdkUtils.initVueSdkControls(null,nodePathTextWithBrowse,vuePathTextWithBrowse);
+        if(sdk!=null) {
+            if(StringUtil.isNotEmpty(sdk.nodePath)) {
+                nodePathTextWithBrowse.setText(sdk.nodePath);
+            }
+            if(StringUtil.isNotEmpty(sdk.vuePath)) {
+                vuePathTextWithBrowse.setText(sdk.vuePath);
+            }
+        }
     }
     private void loadVueTemplateList() {
         myLoadingTemplatesPanel.setVisible(true);

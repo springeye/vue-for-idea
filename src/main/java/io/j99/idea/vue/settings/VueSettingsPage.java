@@ -226,7 +226,7 @@ public class VueSettingsPage implements Configurable {
     }
 
     protected SettingStorage getSettings() {
-        return SettingStorage.getInstance(project);
+        return SettingStorage.getInstance();
     }
 
     private void createUIComponents() {

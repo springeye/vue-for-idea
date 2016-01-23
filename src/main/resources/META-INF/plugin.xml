@@ -45,10 +45,15 @@
     <action class="io.j99.idea.vue.action.NewVueFileAction" id="Vue.NewVueFile" text="Vue File" description="Create new Vue File">
       <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="before" />
     </action>
+    <group id="vue.tools" text="Vue" description="Vue Menu">
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+      <action class="io.j99.idea.vue.action.InstallAction" id="Vue.Install" text="Vue Install" description="Install Dependencies"/>
+    </group>
+
   </actions>
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
-    <projectService serviceImplementation="io.j99.idea.vue.settings.SettingStorage"/>
+    <applicationService serviceImplementation="io.j99.idea.vue.settings.SettingStorage"/>
     <projectConfigurable groupId="language" id="vue.settings" instance="io.j99.idea.vue.settings.VueSettingsPage"/>
     <moduleBuilder builderClass="io.j99.idea.vue.module.VueModuleBuilder"/>
     <fileTypeFactory implementation="io.j99.idea.vue.VueFileTypeFactory"/>

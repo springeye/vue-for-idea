@@ -8,24 +8,17 @@ import org.jetbrains.annotations.Nullable;
 @State(name = "VueProjectSettingsComponent",
         storages = {
                 @Storage(id = "default", file = StoragePathMacros.PROJECT_FILE),
-                @Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/vue_for_idea.xml", scheme = StorageScheme.DIRECTORY_BASED)})
+                @Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/vue_for_idea.xml", scheme = StorageScheme.DIRECTORY_BASED)
+        })
 public class SettingStorage implements PersistentStateComponent<SettingStorage> {
     public String builtinRulesPath = "";
     public String vueExePath = "";
-    public String nodeInterpreter;
+    public String nodeInterpreter="";
     public boolean treatAllIssuesAsWarnings;
-    /**
-     * @deprecated
-     */
-    @Deprecated
-    public boolean commonJS;
 
-    protected Project project;
 
-    public static SettingStorage getInstance(Project project) {
-        if(project==null)return null;
-        SettingStorage settingStorage = ServiceManager.getService(project, SettingStorage.class);
-        settingStorage.project = project;
+    public static SettingStorage getInstance() {
+        SettingStorage settingStorage = ServiceManager.getService(SettingStorage.class);
         return settingStorage;
     }
 

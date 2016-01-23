@@ -64,6 +64,7 @@ public class VueModuleBuilder extends ModuleBuilder {
         setNodeAndVue(modifiableRootModel, wizardData);
         try {
             Collection<VirtualFile> files = wizardData.myTemplate.generateProject(wizardData, modifiableRootModel.getModule(), baseDir);
+            saveSettings(wizardData.sdk);
             ProgressManager.getInstance().run(new Task.Backgroundable(modifiableRootModel.getProject(),"Install Dependencies"){
                 @Override
                 public void run(@NotNull ProgressIndicator progressIndicator) {
@@ -93,25 +94,17 @@ public class VueModuleBuilder extends ModuleBuilder {
 
 
     static void setNodeAndVue(ModifiableRootModel modifiableRootModel, VueProjectWizardData wizardData) {
-        saveSettings(modifiableRootModel.getProject(), wizardData.sdk);
+        saveSettings(wizardData.sdk);
     }
 
-    protected static SettingStorage getSettings(Project project) {
-        return SettingStorage.getInstance(project);
-    }
-
-    protected static void saveSettings(Project project, VueProjectWizardData.Sdk sdk) {
-        SettingStorage settingStorage = getSettings(project);
+    protected static void saveSettings(VueProjectWizardData.Sdk sdk) {
+        SettingStorage settingStorage = SettingStorage.getInstance();
         settingStorage.vueExePath = sdk.vuePath;
         settingStorage.nodeInterpreter = sdk.nodePath;
-        VueProjectSettingsComponent component = project.getComponent(VueProjectSettingsComponent.class);
-        if (component != null) component.validateSettings();
-        DaemonCodeAnalyzer.getInstance(project).restart();
     }
 
-    protected VueProjectWizardData.Sdk loadSettings(Project project) {
-        if (project == null) return null;
-        SettingStorage settingStorage = getSettings(project);
+    protected VueProjectWizardData.Sdk loadSettings() {
+        SettingStorage settingStorage = SettingStorage.getInstance();
         return new VueProjectWizardData.Sdk(settingStorage.nodeInterpreter, settingStorage.vueExePath);
     }
 
@@ -143,7 +136,7 @@ public class VueModuleBuilder extends ModuleBuilder {
     @Nullable
     @Override
     public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
-        VueModuleWizardStep step = new VueModuleWizardStep(context, loadSettings(context.getProject()));
+        VueModuleWizardStep step = new VueModuleWizardStep(context, loadSettings());
         Disposer.register(parentDisposable, step);
         return step;
     }
