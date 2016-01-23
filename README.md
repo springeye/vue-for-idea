@@ -1,5 +1,8 @@
 # Vue for Idea
 
+# requires
+Requires Instation [node](https://nodejs.org) and [vue-cli](https://github.com/vuejs/vue-cli)
+
 ##todo
 - [x] highlighter
 - [x] autocomplete(60%)
