@@ -9,6 +9,9 @@
 - [x] new project and new module(80%)
 - [ ] other feature
 
+![image](https://raw.githubusercontent.com/henjue/vue-for-idea/master/images/4.png)
+
+![image](https://raw.githubusercontent.com/henjue/vue-for-idea/master/images/5.png)
 
 ![image](https://raw.githubusercontent.com/henjue/vue-for-idea/master/images/2.png)
 
@@ -29,3 +32,4 @@
 
 * 20151212:
     Syntax checking and highlighting Using HTML
+
