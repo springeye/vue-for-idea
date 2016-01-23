@@ -37,7 +37,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
+import java.util.TimerTask;
 
 /**
  * Created by apple on 16/1/22.
@@ -62,33 +64,72 @@ public class VueModuleBuilder extends ModuleBuilder {
         final String templateName = wizardData.myTemplate.getName();
         UsageTrigger.trigger("VueProjectWizard." + templateName);
         setNodeAndVue(modifiableRootModel, wizardData);
-        try {
-            Collection<VirtualFile> files = wizardData.myTemplate.generateProject(wizardData, modifiableRootModel.getModule(), baseDir);
-            saveSettings(wizardData.sdk);
-            ProgressManager.getInstance().run(new Task.Backgroundable(modifiableRootModel.getProject(),"Install Dependencies"){
+//        try {
+//            Collection<VirtualFile> files = wizardData.myTemplate.generateProject(wizardData, modifiableRootModel.getModule(), baseDir);
+
+            ProgressManager.getInstance().run(new Task.Backgroundable(modifiableRootModel.getProject(),"Create Files"){
+
                 @Override
                 public void run(@NotNull ProgressIndicator progressIndicator) {
-                    final FileEditorManager manager = FileEditorManager.getInstance(modifiableRootModel.getModule().getProject());
-                    for (VirtualFile file : files) {
-                        if("package.json".equals(file.getName())){
-                            GeneralCommandLine cmd = NodeRunner.createCommandLine(baseDir.getPath(), wizardData.sdk.nodePath, "/usr/local/bin/npm");
-                            cmd.addParameter("i");
-                            try {
-                                ProcessOutput out = NodeRunner.execute(cmd, NodeRunner.TIME_OUT*10);
-                                if(out.getExitCode()==0){
-                                    System.out.println(out.getStdout());
-                                }else{
-                                    UsageTrigger.trigger(out.getStderr());
-                                }
-                            } catch (ExecutionException e) {
-                                e.printStackTrace();
+                    GeneralCommandLine cmd = NodeRunner.createCommandLine(baseDir.getPath(), wizardData.sdk.nodePath, wizardData.sdk.vuePath);
+                    cmd.addParameter("init");
+                    cmd.addParameter(wizardData.myTemplate.getName());
+                    Module module = modifiableRootModel.getModule();
+                    cmd.addParameter(module.getName());
+                    try {
+                        NodeRunner.ProcessListener listener=new NodeRunner.ProcessListener() {
+                            @Override
+                            public void onError(OSProcessHandler processHandler, String text) {
+
                             }
+
+                            @Override
+                            public void onOutput(OSProcessHandler processHandler, String text) {
+                                if(text.startsWith("Project name") || text.startsWith("Project description:")||text.startsWith("Author")||text.startsWith("private")){
+                                    try {
+                                        System.out.println(text);
+                                        OutputStream processInput = processHandler.getProcessInput();
+                                        processInput.write(System.getProperty("line.separator").getBytes());
+                                        processInput.flush();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCommand(OSProcessHandler processHandler, String text) {
+
+                            }
+                        };
+                        ProcessOutput out = NodeRunner.execute(cmd,listener, NodeRunner.TIME_OUT);
+                        if(out.getExitCode()==0){
+                            System.out.println(out.getStdout());
+
+                            install(baseDir.getPath()+module.getName(),module,wizardData);
+                        }else{
+                            UsageTrigger.trigger(out.getStderr());
                         }
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
                     }
                 }
             });
-        } catch (IOException e) {
-//            e.printStackTrace();
+            saveSettings(wizardData.sdk);
+    }
+
+    private static void install(String cwd,Module module,VueProjectWizardData data) {
+        GeneralCommandLine cmd = NodeRunner.createCommandLine(cwd, data.sdk.nodePath, "/usr/local/bin/npm");
+        cmd.addParameter("i");
+        try {
+            ProcessOutput out = NodeRunner.execute(cmd, NodeRunner.TIME_OUT*10);
+            if(out.getExitCode()==0){
+                System.out.println(out.getStdout());
+            }else{
+                UsageTrigger.trigger(out.getStderr());
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
     }
 
