@@ -5,11 +5,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
 
-@State(name = "VueProjectSettingsComponent",
-        storages = {
-                @Storage(id = "default", file = StoragePathMacros.PROJECT_FILE),
-                @Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/vue_for_idea.xml", scheme = StorageScheme.DIRECTORY_BASED)
-        })
+@State(name = "Vue",
+        storages = @Storage(id = "dir", file = StoragePathMacros.APP_CONFIG + "/vue_for_idea.xml"))
 public class SettingStorage implements PersistentStateComponent<SettingStorage> {
     public String builtinRulesPath = "";
     public String vueExePath = "";
