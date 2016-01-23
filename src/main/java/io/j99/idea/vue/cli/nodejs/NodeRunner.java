@@ -48,7 +48,11 @@ public final class NodeRunner {
         }
         return commandLine;
     }
-
+    public interface ProcessListener{
+        void onError(OSProcessHandler processHandler ,String text);
+        void onOutput(OSProcessHandler processHandler ,String text);
+        void onCommand(OSProcessHandler processHandler , String text);
+    }
     /**
      * @param commandLine command line to sdk
      * @param timeoutInMilliseconds timeout
@@ -56,7 +60,7 @@ public final class NodeRunner {
      * @throws ExecutionException
      */
     @NotNull
-    public static ProcessOutput execute(@NotNull GeneralCommandLine commandLine, int timeoutInMilliseconds) throws ExecutionException {
+    public static ProcessOutput execute(@NotNull GeneralCommandLine commandLine,ProcessListener listener, int timeoutInMilliseconds) throws ExecutionException {
         LOG.info("Running node command: " + commandLine.getCommandLineString());
         Process process = commandLine.createProcess();
         OSProcessHandler processHandler = new ColoredProcessHandler(process, commandLine.getCommandLineString(), Charsets.UTF_8);
@@ -65,8 +69,18 @@ public final class NodeRunner {
             public void onTextAvailable(ProcessEvent event, Key outputType) {
                 if (outputType.equals(ProcessOutputTypes.STDERR)) {
                     output.appendStderr(event.getText());
+                    if(listener!=null){
+                        listener.onError(processHandler,event.getText());
+                    }
                 } else if (!outputType.equals(ProcessOutputTypes.SYSTEM)) {
                     output.appendStdout(event.getText());
+                    if(listener!=null){
+                        listener.onOutput(processHandler,event.getText());
+                    }
+                }else if(outputType.equals(ProcessOutputTypes.SYSTEM)){
+                    if(listener!=null){
+                        listener.onCommand(processHandler,event.getText());
+                    }
                 }
             }
         });
@@ -81,5 +95,15 @@ public final class NodeRunner {
             throw new ExecutionException("Command '" + commandLine.getCommandLineString() + "' is timed out.");
         }
         return output;
+    }
+    /**
+     * @param commandLine command line to sdk
+     * @param timeoutInMilliseconds timeout
+     * @return process output
+     * @throws ExecutionException
+     */
+    @NotNull
+    public static ProcessOutput execute(@NotNull GeneralCommandLine commandLine, int timeoutInMilliseconds) throws ExecutionException {
+        return execute(commandLine,null,timeoutInMilliseconds);
     }
 }

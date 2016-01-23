@@ -3,6 +3,7 @@ package io.j99.idea.vue.module;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
@@ -17,6 +18,9 @@ import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.WebModuleBuilder;
 import com.intellij.openapi.module.WebModuleType;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
@@ -60,15 +64,16 @@ public class VueModuleBuilder extends ModuleBuilder {
         setNodeAndVue(modifiableRootModel, wizardData);
         try {
             Collection<VirtualFile> files = wizardData.myTemplate.generateProject(wizardData, modifiableRootModel.getModule(), baseDir);
-            runWhenNonModalIfModuleNotDisposed(new Runnable() {
-                public void run() {
+            ProgressManager.getInstance().run(new Task.Backgroundable(modifiableRootModel.getProject(),"Install Dependencies"){
+                @Override
+                public void run(@NotNull ProgressIndicator progressIndicator) {
                     final FileEditorManager manager = FileEditorManager.getInstance(modifiableRootModel.getModule().getProject());
                     for (VirtualFile file : files) {
                         if("package.json".equals(file.getName())){
                             GeneralCommandLine cmd = NodeRunner.createCommandLine(baseDir.getPath(), wizardData.sdk.nodePath, "/usr/local/bin/npm");
                             cmd.addParameter("i");
                             try {
-                                ProcessOutput out = NodeRunner.execute(cmd, NodeRunner.TIME_OUT);
+                                ProcessOutput out = NodeRunner.execute(cmd, NodeRunner.TIME_OUT*10);
                                 if(out.getExitCode()==0){
                                     System.out.println(out.getStdout());
                                 }else{
@@ -79,9 +84,8 @@ public class VueModuleBuilder extends ModuleBuilder {
                             }
                         }
                     }
-
                 }
-            }, modifiableRootModel.getModule());
+            });
         } catch (IOException e) {
 //            e.printStackTrace();
         }
