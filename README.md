@@ -6,7 +6,7 @@
 - [ ] reference contributor and 
 - [ ] Go To Symbol Contributor
 - [ ] Support other "lang"
-- [ ] new project and new module
+- [x] new project and new module(80%)
 - [ ] other feature
 
 
@@ -15,6 +15,14 @@
 ![image](https://raw.githubusercontent.com/henjue/vue-for-idea/master/images/3.png)
 
 ## change-nodes:
+* 20160123
+
+    New Vue Project Wizard
+    
+* 20151229
+
+    Create Vue File Template Action
+    
 * 20151228:
 
     Support Vue AutoComplete for "v-xxxx" attr and "@xxxx" event;example:v-bind,v-for,v-show,@click,@load......

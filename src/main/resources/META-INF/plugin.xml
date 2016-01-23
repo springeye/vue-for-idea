@@ -11,6 +11,8 @@
   <change-notes><![CDATA[
         <html>
         <dl>
+            <dt>20160123</dt>
+            <dd>New Vue Project Wizard</dd>
             <dt>20151229</dt>
             <dd>Create Vue File Template Action</dd>
             <dt>20151228</dt>
