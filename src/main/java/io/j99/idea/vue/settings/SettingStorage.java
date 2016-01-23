@@ -1,7 +1,6 @@
 package io.j99.idea.vue.settings;
 
 import com.intellij.openapi.components.*;
-import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
 

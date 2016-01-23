@@ -47,7 +47,7 @@
     </action>
     <group id="vue.tools" text="Vue" description="Vue Menu">
       <add-to-group group-id="ToolsMenu" anchor="last"/>
-      <action class="io.j99.idea.vue.action.InstallAction" id="Vue.Install" text="Vue Install" description="Install Dependencies"/>
+      <action class="io.j99.idea.vue.action.InstallAction"  id="Vue.Install" text="Vue Install" description="Install Dependencies"/>
     </group>
 
   </actions>

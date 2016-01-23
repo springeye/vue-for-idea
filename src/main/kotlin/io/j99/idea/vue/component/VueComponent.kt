@@ -3,9 +3,7 @@ package io.j99.idea.vue.component
 import com.intellij.openapi.components.AbstractProjectComponent
 import com.intellij.openapi.project.Project
 import com.intellij.xml.XmlAttributeDescriptor
-
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 import kotlin.properties.Delegates
 
 /**

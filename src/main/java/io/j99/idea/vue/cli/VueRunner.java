@@ -1,4 +1,5 @@
 package io.j99.idea.vue.cli;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -8,9 +9,9 @@ import com.intellij.execution.process.ProcessOutput;
 import com.intellij.internal.statistic.UsageTrigger;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.diagnostic.Logger;
-import io.j99.idea.vue.component.VueProjectSettingsComponent;
 import io.j99.idea.vue.cli.build.VerifyMessage;
 import io.j99.idea.vue.cli.nodejs.NodeRunner;
+import io.j99.idea.vue.component.VueProjectSettingsComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
