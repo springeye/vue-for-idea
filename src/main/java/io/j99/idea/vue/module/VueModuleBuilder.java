@@ -4,6 +4,7 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.ide.util.projectWizard.WizardContext;
@@ -23,16 +24,20 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import io.j99.idea.vue.VueIcons;
 import io.j99.idea.vue.cli.nodejs.NodeRunner;
+import io.j99.idea.vue.component.VueProjectSettingsComponent;
 import io.j99.idea.vue.settings.SettingStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -71,10 +76,10 @@ public class VueModuleBuilder extends ModuleBuilder {
             LOG.info("Successfully deleted " + tempProject);
         }
     }
-    static void setupProject(ModifiableRootModel modifiableRootModel,final VirtualFile baseDir, VueProjectWizardData wizardData) {
+    static void setupProject(final ModifiableRootModel modifiableRootModel,final VirtualFile baseDir, final VueProjectWizardData wizardData) {
         final String templateName = wizardData.myTemplate.getName();
-        Module module = modifiableRootModel.getModule();
-        String moduleName = module.getName();
+        final Module module = modifiableRootModel.getModule();
+        final String moduleName = module.getName();
         UsageTrigger.trigger("VueProjectWizard." + templateName);
         ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
             @Override
@@ -129,7 +134,6 @@ public class VueModuleBuilder extends ModuleBuilder {
                             assert from != null;
                             FileUtil.copyDir(from, new File(baseDir.getPath()));
                             deleteTemp(tempProject);
-                            install(baseDir,module,wizardData);
                             //使用vue init创建app之后可能需要对创建好的文件进行修改
                             wizardData.myTemplate.generateProject(wizardData,module,baseDir);
                         }
@@ -145,6 +149,21 @@ public class VueModuleBuilder extends ModuleBuilder {
             }
         },"Create Project",false,module.getProject());
 
+        ApplicationManager.getApplication().runWriteAction(new Runnable() {
+            @Override
+            public void run() {
+                final Project project = module.getProject();
+                baseDir.refresh(true, true, new Runnable() {
+                    @Override
+                    public void run() {
+                        VirtualFile idea = project.getBaseDir().findChild(".idea");
+                        VueProjectSettingsComponent.excludeFolderOrFile(project,idea);
+                        install(baseDir,module,wizardData);
+                    }
+                });
+            }
+        });
+
     }
     private static void showErrorMessage(@NotNull String message) {
         String fullMessage = "Error creating vue-loader App. " + message;
@@ -153,10 +172,10 @@ public class VueModuleBuilder extends ModuleBuilder {
                 new Notification("Vue Generator", title, fullMessage, NotificationType.ERROR)
         );
     }
-    private static void install(VirtualFile cwd,Module module,VueProjectWizardData data) {
+    private static void install(final VirtualFile cwd,final Module module,final VueProjectWizardData data) {
         ProgressManager.getInstance().run(new Task.Backgroundable(module.getProject(), "Install Dependencies",false) {
             @Override
-            public void run(@NotNull ProgressIndicator progressIndicator) {
+            public void run(@NotNull final ProgressIndicator progressIndicator) {
                 VirtualFile baseDir = module.getProject().getBaseDir();
                 GeneralCommandLine cmd = NodeRunner.createCommandLine(baseDir.getPath(), data.sdk.nodePath, "/usr/local/bin/npm");
                 cmd.addParameter("i");
@@ -173,7 +192,7 @@ public class VueModuleBuilder extends ModuleBuilder {
 
                         @Override
                         public void onCommand(OSProcessHandler processHandler, String text) {
-
+                            progressIndicator.setText(text);
                         }
                     }, NodeRunner.TIME_OUT * 10);
                     if (out.getExitCode() == 0) {

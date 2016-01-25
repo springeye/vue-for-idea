@@ -25,7 +25,7 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="99.18"/>
+  <idea-version since-build="143"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
@@ -58,6 +58,7 @@
     <applicationService serviceImplementation="io.j99.idea.vue.settings.SettingStorage"/>
     <projectConfigurable groupId="language" id="vue.settings" instance="io.j99.idea.vue.settings.VueSettingsPage"/>
     <moduleBuilder builderClass="io.j99.idea.vue.module.VueModuleBuilder"/>
+    <directoryProjectGenerator implementation="io.j99.idea.vue.module.VueProjectGenerator"/>
     <fileTypeFactory implementation="io.j99.idea.vue.VueFileTypeFactory"/>
     <syntaxHighlighter key="Vue" implementationClass="io.j99.idea.vue.highlighter.VueSyntaxHighlighter"/>
     <xml.attributeDescriptorsProvider implementation="io.j99.idea.vue.component.VueAttributeDescriptorProvider"/>
