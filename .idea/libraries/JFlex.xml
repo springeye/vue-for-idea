@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="JFlex">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/main/java/io/j99/idea/vue/lexer/JFlex.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
