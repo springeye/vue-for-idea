@@ -3,6 +3,11 @@
 # requires
 Requires Instation [node](https://nodejs.org) and [vue-cli](https://github.com/vuejs/vue-cli)
 
+#Dev Test Environment
+* idea 15
+* jdk 1.8
+
+
 ##todo
 - [x] highlighter
 - [x] autocomplete(60%)
