@@ -45,7 +45,7 @@
   </project-components>
   <actions>
     <action class="io.j99.idea.vue.action.NewVueFileAction" id="Vue.NewVueFile" text="Vue File" description="Create new Vue File">
-      <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="before" />
+      <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="after" />
     </action>
     <group id="vue.tools" text="Vue" description="Vue Menu">
       <add-to-group group-id="ToolsMenu" anchor="last"/>
