@@ -93,7 +93,7 @@ public class VueComponent extends AbstractProjectComponent {
     @NotNull
     @Override
     public String getComponentName() {
-        return "VueProjectSettingsComponent";
+        return  VueComponent.class.getSimpleName();
     }
 
     public static VueComponent getInstance(Project project) {

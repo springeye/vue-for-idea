@@ -57,7 +57,7 @@ public class VueProjectSettingsComponent implements ProjectComponent {
     @NotNull
     @Override
     public String getComponentName() {
-        return "VueProjectSettingsComponent";
+        return VueProjectSettingsComponent.class.getSimpleName();
     }
 
     public boolean isSettingsValid() {
