@@ -29,18 +29,20 @@ import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import io.j99.idea.vue.VueIcons;
+import io.j99.idea.vue.action.InstallAction;
 import io.j99.idea.vue.cli.nodejs.NodeRunner;
+import io.j99.idea.vue.component.VueProjectSettingsComponent;
 import io.j99.idea.vue.settings.SettingStorage;
+import org.jdesktop.swingx.util.OS;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 
 /**
  * Created by apple on 16/1/22.
@@ -48,6 +50,7 @@ import java.io.OutputStream;
 public class VueModuleBuilder extends ModuleBuilder {
     private VueProjectWizardData myWizardData;
     private static final Logger LOG = Logger.getInstance(VueModuleBuilder.class);
+
     void setWizardData(final VueProjectWizardData wizardData) {
         myWizardData = wizardData;
     }
@@ -60,18 +63,20 @@ public class VueModuleBuilder extends ModuleBuilder {
             setupProject(modifiableRootModel, baseDir, myWizardData);
         }
     }
+
     protected static File createTemp() throws IOException {
         return FileUtil.createTempDirectory("intellij-vue-generator", null, false);
     }
+
     protected static void deleteTemp(File tempProject) {
         if (!FileUtil.delete(tempProject)) {
             LOG.warn("Cannot delete " + tempProject);
-        }
-        else {
+        } else {
             LOG.info("Successfully deleted " + tempProject);
         }
     }
-    static void setupProject(ModifiableRootModel modifiableRootModel,final VirtualFile baseDir, VueProjectWizardData wizardData) {
+
+    static void setupProject(ModifiableRootModel modifiableRootModel, final VirtualFile baseDir, VueProjectWizardData wizardData) {
         final String templateName = wizardData.myTemplate.getName();
         Module module = modifiableRootModel.getModule();
         String moduleName = module.getName();
@@ -81,14 +86,15 @@ public class VueModuleBuilder extends ModuleBuilder {
             public void run() {
 
                 try {
-                    NodeRunner.ProcessListener listener=new NodeRunner.ProcessListener() {
+                    NodeRunner.ProcessListener listener = new NodeRunner.ProcessListener() {
                         @Override
                         public void onError(OSProcessHandler processHandler, String text) {
 
                         }
+
                         @Override
                         public void onOutput(OSProcessHandler processHandler, String text) {
-                            if(text.startsWith("Project name") || text.startsWith("Project description:")||text.startsWith("Author")||text.startsWith("private")){
+                            if (text.startsWith("Project name") || text.startsWith("Project description:") || text.startsWith("Author") || text.startsWith("private")) {
                                 try {
                                     System.out.println(text);
                                     OutputStream processInput = processHandler.getProcessInput();
@@ -120,8 +126,8 @@ public class VueModuleBuilder extends ModuleBuilder {
                             new Notification("Vue Generator", title, fullMessage, NotificationType.INFORMATION)
                     );
 
-                    ProcessOutput out = NodeRunner.execute(cmd,listener, NodeRunner.TIME_OUT);
-                    if(out.getExitCode()==0){
+                    ProcessOutput out = NodeRunner.execute(cmd, listener, NodeRunner.TIME_OUT);
+                    if (out.getExitCode() == 0) {
                         setNodeAndVue(modifiableRootModel, wizardData);
                         File[] array = tempProject.listFiles();
                         if (array != null && array.length != 0) {
@@ -129,11 +135,11 @@ public class VueModuleBuilder extends ModuleBuilder {
                             assert from != null;
                             FileUtil.copyDir(from, new File(baseDir.getPath()));
                             deleteTemp(tempProject);
-                            install(baseDir,module,wizardData);
+                            install(baseDir, module, wizardData);
                             //使用vue init创建app之后可能需要对创建好的文件进行修改
-                            wizardData.myTemplate.generateProject(wizardData,module,baseDir);
+//                            wizardData.myTemplate.generateProject(wizardData, module, baseDir);
                         }
-                    }else{
+                    } else {
                         UsageTrigger.trigger(out.getStderr());
                         showErrorMessage(out.getStderr());
                     }
@@ -143,9 +149,10 @@ public class VueModuleBuilder extends ModuleBuilder {
                     e.printStackTrace();
                 }
             }
-        },"Create Project",false,module.getProject());
+        }, "Create Project", false, module.getProject());
 
     }
+
     private static void showErrorMessage(@NotNull String message) {
         String fullMessage = "Error creating vue-loader App. " + message;
         String title = "Create Vue Project";
@@ -153,37 +160,75 @@ public class VueModuleBuilder extends ModuleBuilder {
                 new Notification("Vue Generator", title, fullMessage, NotificationType.ERROR)
         );
     }
-    private static void install(VirtualFile cwd,Module module,VueProjectWizardData data) {
-        ProgressManager.getInstance().run(new Task.Backgroundable(module.getProject(), "Install Dependencies",false) {
+
+    private static void install(VirtualFile cwd, Module module, VueProjectWizardData data) {
+        ProgressManager.getInstance().run(new Task.Backgroundable(module.getProject(), "Install Dependencies", false) {
             @Override
             public void run(@NotNull ProgressIndicator progressIndicator) {
                 VirtualFile baseDir = module.getProject().getBaseDir();
-                GeneralCommandLine cmd = NodeRunner.createCommandLine(baseDir.getPath(), data.sdk.nodePath, "/usr/local/bin/npm");
-                cmd.addParameter("i");
+
+                BufferedInputStream in = null;
+                BufferedReader inBr = null;
                 try {
-                    ProcessOutput out = NodeRunner.execute(cmd,new NodeRunner.ProcessListener() {
-                        @Override
-                        public void onError(OSProcessHandler processHandler, String text) {
-                        }
-
-                        @Override
-                        public void onOutput(OSProcessHandler processHandler, String text) {
-                            progressIndicator.setText(text);
-                        }
-
-                        @Override
-                        public void onCommand(OSProcessHandler processHandler, String text) {
-
-                        }
-                    }, NodeRunner.TIME_OUT * 10);
-                    if (out.getExitCode() == 0) {
-                        System.out.println(out.getStdout());
+                    final Process process;
+                    if (OS.isWindows()) {
+                        process = Runtime.getRuntime().exec("where npm");
                     } else {
-                        UsageTrigger.trigger(out.getStderr());
+                        process = Runtime.getRuntime().exec("which npm");
                     }
-                } catch (ExecutionException e) {
+                    in = new BufferedInputStream(process.getInputStream());
+                    inBr = new BufferedReader(new InputStreamReader(in));
+                    if (process.waitFor() == 0) {
+                        String npmExe = inBr.readLine();
+                        if (StringUtil.isNotEmpty(npmExe)) {
+
+                            GeneralCommandLine cmd = NodeRunner.createCommandLine(baseDir.getPath(), data.sdk.nodePath, npmExe);
+                            cmd.addParameter("i");
+                            try {
+                                ProcessOutput out = NodeRunner.execute(cmd, new NodeRunner.ProcessListener() {
+                                    @Override
+                                    public void onError(OSProcessHandler processHandler, String text) {
+                                    }
+
+                                    @Override
+                                    public void onOutput(OSProcessHandler processHandler, String text) {
+                                        progressIndicator.setText(text);
+                                    }
+
+                                    @Override
+                                    public void onCommand(OSProcessHandler processHandler, String text) {
+
+                                    }
+                                }, NodeRunner.TIME_OUT * 10);
+                                if (out.getExitCode() == 0) {
+                                    System.out.println(out.getStdout());
+                                } else {
+                                    UsageTrigger.trigger(out.getStderr());
+                                }
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            VueProjectSettingsComponent.showNotification("please install npm!", NotificationType.WARNING);
+                        }
+                    }
+
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
+                } finally {
+                    if (inBr != null) try {
+                        inBr.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (in != null) try {
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+
+
             }
         });
     }
