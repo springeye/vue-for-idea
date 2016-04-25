@@ -21,6 +21,10 @@ Requires Instation [node](https://nodejs.org) and [vue-cli](https://github.com/v
 ![image](https://raw.githubusercontent.com/henjue/vue-for-idea/master/images/3.png)
 
 ## change-nodes:
+* 20160424
+
+    Fix new project error
+
 * 20160123
 
     New Vue Project Wizard
