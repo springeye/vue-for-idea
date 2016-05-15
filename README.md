@@ -1,7 +1,10 @@
 # Vue for Idea
 
-# requires
-Requires Instation [node](https://nodejs.org) and [vue-cli](https://github.com/vuejs/vue-cli)
+# Requires
+* IntelliJ IDEA 15(base) 
+* Java 8 
+* [Node](https://nodejs.org)
+* [Vue-cli](https://github.com/vuejs/vue-cli)
 
 ##todo
 - [x] highlighter
@@ -21,6 +24,11 @@ Requires Instation [node](https://nodejs.org) and [vue-cli](https://github.com/v
 ![image](https://raw.githubusercontent.com/henjue/vue-for-idea/master/images/3.png)
 
 ## change-nodes:
+* 20160515
+
+    List Vue Templates list by github api
+    
+    Fix background error     
 * 20160424
 
     Fix new project error

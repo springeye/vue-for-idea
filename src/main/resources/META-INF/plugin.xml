@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>io.j99.idea.vue</id>
   <name>vue-for-idea</name>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <vendor email="henjue@gmail.com" url="https://github.com/henjue/vue-for-idea"/>
 
   <description><![CDATA[
@@ -11,6 +11,9 @@
   <change-notes><![CDATA[
         <html>
         <dl>
+            <dt>20160515</dt>
+            <dd>List Vue Templates list by github api</dd>
+            <dd>Fix background error</dd>
             <dt>20160424</dt>
             <dd>fix new project error</dd>
             <dt>20160123</dt>
@@ -27,7 +30,7 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="99.18"/>
+  <idea-version since-build="143"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->

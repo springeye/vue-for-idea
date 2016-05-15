@@ -9,5 +9,7 @@ import javax.swing.*;
  */
 public class VueIcons {
     private static final  String PATH="/io/j99/idea/vue/icons/";
-    public static Icon VUE_ICON = IconLoader.getIcon(PATH+ "logo.png");
+    public static final Icon VUE_ICON = IconLoader.getIcon(PATH+ "logo.png");
+    public static final Icon BROWSERIFY_ICON=IconLoader.getIcon(PATH+ "browserify.png");
+    public static final Icon WEBPACK_ICON=IconLoader.getIcon(PATH+ "webpack.png");
 }

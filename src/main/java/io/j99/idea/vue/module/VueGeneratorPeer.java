@@ -5,6 +5,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.ide.util.projectWizard.SettingsStep;
 import com.intellij.internal.statistic.UsageTrigger;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -21,10 +22,14 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.util.ui.AsyncProcessIcon;
 import com.intellij.xml.util.XmlStringUtil;
 import io.j99.idea.vue.VueBundle;
-import io.j99.idea.vue.cli.VueRunner;
-import io.j99.idea.vue.cli.VueSettings;
+import io.j99.idea.vue.VueIcons;
 import io.j99.idea.vue.cli.nodejs.NodeRunner;
+import io.j99.idea.vue.component.VueProjectSettingsComponent;
+import io.j99.idea.vue.network.Network;
+import io.j99.idea.vue.network.model.TemplateModel;
 import io.j99.idea.vue.sdk.VueSdkUtils;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +39,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -101,11 +107,14 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
                     public void onEnd(ProcessOutput output) {
                         if (output.getExitCode() == 0) {
                             valitedateNode=true;
-                            myVersionLabel.setText(output.getStdout().trim());
-                            vuePathTextWithBrowse.setEnabled(true);
+                            SwingUtilities.invokeLater(() -> {
+                                myVersionLabel.setText(output.getStdout().trim());
+                                vuePathTextWithBrowse.setEnabled(true);
+                            });
+
                         } else {
                             valitedateNode=false;
-                            vuePathTextWithBrowse.setEnabled(false);
+                            SwingUtilities.invokeLater(() -> vuePathTextWithBrowse.setEnabled(false));
                             UsageTrigger.trigger(output.getStderr());
                         }
                     }
@@ -137,8 +146,10 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
                     public void onEnd(ProcessOutput output){
                         if(output.getExitCode()==0){
                             valitedateVue=true;
-                            myErrorLabel.setVisible(false);
-                            myVueVersionLable.setText(output.getStdout().trim());
+                            SwingUtilities.invokeLater(() -> {
+                                myErrorLabel.setVisible(false);
+                                myVueVersionLable.setText(output.getStdout().trim());
+                            });
                             loadVueTemplateList();
                         }else{
                             valitedateVue=false;
@@ -165,54 +176,57 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
         }
     }
     private void loadVueTemplateList() {
-        myLoadingTemplatesPanel.setVisible(true);
-        myLoadedTemplatesPanel.setVisible(false);
+        SwingUtilities.invokeLater(() -> {
+            myLoadingTemplatesPanel.setVisible(true);
+            myLoadedTemplatesPanel.setVisible(false);
+        });
         AsyncProcessIcon asyncProcessIcon=new AsyncProcessIcon("Vue Template loading");
         myLoadingTemplatesPanel.add(asyncProcessIcon,new GridConstraints());
         asyncProcessIcon.resume();
         ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
             @Override
             public void run() {
-                String vuePath = vuePathTextWithBrowse.getText().trim();
-                String nodePath = nodePathTextWithBrowse.getText().trim();
                 try {
-                    List<String> list = VueRunner.listTemplate(VueSettings.build(FileUtil.getTempDirectory(), nodePath, vuePath));
+                    List<TemplateModel> templates = new Network().listTemplate();
                     asyncProcessIcon.suspend();
                     Disposer.dispose(asyncProcessIcon);
-                    myLoadingTemplatesPanel.setVisible(false);
-                    myLoadedTemplatesPanel.setVisible(true);
-                    DefaultListModel<VueProjectTemplate> model = new DefaultListModel<>();
-                    for(int i=1;i<list.size();i++){
-
-                        String[] split = list.get(i).split(" - ");
-                        String name = split[0].replaceFirst("  ★  ","");
-                        String desc = split[1];
-                        if("browserify".equals(name)){
-                            model.addElement(new WebpackTemplate(name,desc));
-                        }else if("browserify-simple".equals(name)){
-                            model.addElement(new WebpackTemplate(name,desc));
-                        }else if("webpack".equals(name)){
-                            model.addElement(new WebpackTemplate(name,desc));
-                        }else if("webpack-simple".equals(name)){
-                            model.addElement(new WebpackTemplate(name,desc));
+                    SwingUtilities.invokeLater(() -> {
+                        myLoadingTemplatesPanel.setVisible(false);
+                        myLoadedTemplatesPanel.setVisible(true);
+                    });
+                    if(templates.size()==0){
+                        VueProjectSettingsComponent.showNotification("Can't get Vue Templates,Please check your network!", NotificationType.INFORMATION);
+                    }else {
+                        DefaultListModel<TemplateModel> model = new DefaultListModel<>();
+                        for(TemplateModel template:templates){
+                            model.addElement(template);
                         }
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                myTemplatesList.setModel(model);
+                                myTemplatesList.setCellRenderer(new DefaultListCellRenderer() {
+                                    @Override
+                                    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                                        final JLabel component = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                                        final TemplateModel template = (TemplateModel) value;
+                                        component.setText(template.getDisplayName());
+                                        if(template.getName().startsWith("browserify")){
+                                            component.setIcon(VueIcons.BROWSERIFY_ICON);
+                                        }else if(template.getName().startsWith("webpack")){
+                                            component.setIcon(VueIcons.WEBPACK_ICON);
+                                        }else{
+                                            component.setIcon(VueIcons.VUE_ICON);
+                                        }
+
+                                        return component;
+                                    }
+                                });
+                            }
+                        });
 
                     }
-
-                    myTemplatesList.setModel(model);
-                    myTemplatesList.setCellRenderer(new DefaultListCellRenderer(){
-                        @Override
-                        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                            final JLabel component = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                            final VueProjectTemplate template = (VueProjectTemplate)value;
-                            final String text = template.getDescription().isEmpty()
-                                    ? template.getName()
-                                    : template.getName() + " - " + StringUtil.decapitalize(template.getDescription());
-                            component.setText(text);
-                            return component;
-                        }
-                    });
-                } catch (ExecutionException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -238,8 +252,8 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
     public VueProjectWizardData getSettings() {
         String vuePath = vuePathTextWithBrowse.getText().trim();
         String nodePath = nodePathTextWithBrowse.getText().trim();
-        VueProjectTemplate template = (VueProjectTemplate)myTemplatesList.getSelectedValue();
-        return new VueProjectWizardData(new VueProjectWizardData.Sdk(nodePath, vuePath), template);
+        TemplateModel template = (TemplateModel)myTemplatesList.getSelectedValue();
+        return new VueProjectWizardData(new VueProjectWizardData.Sdk(nodePath, vuePath), new WebpackTemplate(template.getName(),template.getDescription()));
     }
 
     @Nullable
@@ -291,4 +305,5 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
         }
         return false;
     }
+
 }

@@ -18,6 +18,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.io.IOUtil;
+import io.j99.idea.vue.cli.NpmUtils;
 import io.j99.idea.vue.cli.nodejs.NodeRunner;
 import io.j99.idea.vue.component.VueProjectSettingsComponent;
 import io.j99.idea.vue.module.VueProjectWizardData;
@@ -71,32 +72,7 @@ public class InstallAction extends AnAction {
                     if(process.waitFor()==0){
                         String npmExe = inBr.readLine();
                         if(StringUtil.isNotEmpty(npmExe)){
-                            GeneralCommandLine cmd = NodeRunner.createCommandLine(baseDir.getPath(), settings.nodePath, npmExe);
-                            cmd.addParameter("i");
-                            try {
-                                ProcessOutput out = NodeRunner.execute(cmd, new NodeRunner.ProcessListener() {
-                                    @Override
-                                    public void onError(OSProcessHandler processHandler, String text) {
-                                    }
-
-                                    @Override
-                                    public void onOutput(OSProcessHandler processHandler, String text) {
-                                        progressIndicator.setText(text);
-                                    }
-
-                                    @Override
-                                    public void onCommand(OSProcessHandler processHandler, String text) {
-
-                                    }
-                                }, NodeRunner.TIME_OUT * 10);
-                                if (out.getExitCode() == 0) {
-                                    System.out.println(out.getStdout());
-                                } else {
-                                    UsageTrigger.trigger(out.getStderr());
-                                }
-                            } catch (ExecutionException e) {
-                                e.printStackTrace();
-                            }
+                            NpmUtils.packageInstall(progressIndicator,baseDir.getPath(), settings.nodePath, npmExe);
                         }else{
                             VueProjectSettingsComponent.showNotification("please install npm!", NotificationType.WARNING);
                         }
