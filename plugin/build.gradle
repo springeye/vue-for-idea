@@ -1,0 +1,27 @@
+plugins {
+    id "org.jetbrains.intellij" version "0.0.43"
+}
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'idea'
+apply plugin: 'java'
+sourceCompatibility = 1.8
+intellij {
+    version project.hasProperty('ideaVersion') ? ideaVersion : 'IU-15.0.2'
+    pluginName 'vue-for-idea'
+    updateSinceUntilBuild false
+    sameSinceUntilBuild false
+//    downloadSources !Boolean.valueOf(System.getenv('CI'))
+    downloadSources false
+    publish {
+        username 'henjue'
+        pluginId '8123'
+        password Boolean.valueOf(System.getenv('CI'))?System.getenv('PLUGIN_PASSWORD'):PLUGIN_PASSWORD
+        channel System.getenv('PLUGIN_CHANNEL') ?: ''
+    }
+}
+dependencies{
+    compile group: 'org.codehaus.jettison', name: 'jettison', version: '1.3.7'
+}
+group 'io.j99'
+def majorVersion = '1.0.7'
+version "${Boolean.valueOf(System.getenv('CI')) ? "$majorVersion-${System.getenv('TRAVIS_BUILD_NUMBER')}" : "$majorVersion"}"

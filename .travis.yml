@@ -1,0 +1,21 @@
+language: java
+sudo: false
+env:
+  matrix:
+  - IDEA_VERSION=IC-15.0.2
+  - IDEA_VERSION=LATEST-EAP-SNAPSHOT
+jdk:
+  - oraclejdk8
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+notifications:
+  email: false
+branches:
+  only:
+  - gradle
+script:
+- ./gradlew buildPlugin -PideaVersion=$IDEA_VERSION
+#after_success:
+#- if [ $TRAVIS_BRANCH == 'master' ]; then ./gradlew :plugin:publishPlugin; fi
