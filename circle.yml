@@ -1,0 +1,16 @@
+dependencies:
+  pre:
+    - echo "start building....."
+machine:
+  java:
+    version: oraclejdk8
+  environment:
+    IDEA_VERSION: IU-15.0.2
+test:
+  override:
+    - ./gradlew :plugin:buildPlugin -PideaVersion=$IDEA_VERSION
+deployment:
+  release:
+    tag: /v[0-9]+(\.[0-9]+)*/
+    commands:
+      - ./gradlew :plugin:publishPlugin

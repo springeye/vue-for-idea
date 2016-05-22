@@ -1,5 +1,7 @@
 # Vue for Idea
 
+[![Build Status](https://travis-ci.org/henjue/vue-for-idea.svg?branch=develop)](https://travis-ci.org/henjue/vue-for-idea)
+
 # Requires
 * IntelliJ IDEA 15(base) 
 * Java 8 

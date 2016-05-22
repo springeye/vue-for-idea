@@ -2,12 +2,12 @@ plugins {
     id "org.jetbrains.intellij" version "0.0.43"
 }
 apply plugin: 'org.jetbrains.intellij'
-apply plugin: 'idea'
 apply plugin: 'java'
-sourceCompatibility = 1.8
 intellij {
-    version project.hasProperty('ideaVersion') ? ideaVersion : 'IU-15.0.2'
+    type = 'IU'
+    version 'IU-15.0.2'
     pluginName 'vue-for-idea'
+    plugins = ['JavaScriptLanguage']
     updateSinceUntilBuild false
     sameSinceUntilBuild false
 //    downloadSources !Boolean.valueOf(System.getenv('CI'))
@@ -24,4 +24,4 @@ dependencies{
 }
 group 'io.j99'
 def majorVersion = '1.0.7'
-version "${Boolean.valueOf(System.getenv('CI')) ? "$majorVersion-${System.getenv('TRAVIS_BUILD_NUMBER')}" : "$majorVersion"}"
+version "${Boolean.valueOf(System.getenv('CI')) ? "$majorVersion-${System.getenv('CIRCLE_BUILD_NUM')}" : "$majorVersion"}"

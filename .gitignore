@@ -28,7 +28,9 @@ crashlytics-build.properties
 fabric.properties
 ### Gradle template
 .gradle
-build/
+/build/
+/plugin/build
+.DS_Store
 
 # Ignore Gradle GUI config
 gradle-app.setting

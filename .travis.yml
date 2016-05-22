@@ -1,8 +1,10 @@
 language: java
 sudo: false
+install:
+  echo "start building"
 env:
   matrix:
-  - IDEA_VERSION=IC-15.0.2
+  - IDEA_VERSION=IU-15.0.2
   - IDEA_VERSION=LATEST-EAP-SNAPSHOT
 jdk:
   - oraclejdk8
@@ -14,8 +16,6 @@ notifications:
   email: false
 branches:
   only:
-  - gradle
-script:
-- ./gradlew buildPlugin -PideaVersion=$IDEA_VERSION
-#after_success:
-#- if [ $TRAVIS_BRANCH == 'master' ]; then ./gradlew :plugin:publishPlugin; fi
+  - develop
+script: 
+  - ./gradlew :plugin:buildPlugin -PideaVersion=$IDEA_VERSION
