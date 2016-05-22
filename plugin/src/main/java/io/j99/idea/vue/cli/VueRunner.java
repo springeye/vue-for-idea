@@ -10,7 +10,6 @@ import com.intellij.internal.statistic.UsageTrigger;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.diagnostic.Logger;
 import io.j99.idea.vue.cli.build.VerifyMessage;
-import io.j99.idea.vue.cli.nodejs.NodeRunner;
 import io.j99.idea.vue.component.VueProjectSettingsComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,12 +39,12 @@ public final class VueRunner {
     @NotNull
     private static ProcessOutput version(@NotNull VueSettings settings) throws ExecutionException {
         GeneralCommandLine commandLine = VueCliBuilder.version(settings);
-        return NodeRunner.execute(commandLine, TIME_OUT);
+        return CmdRunner.execute(commandLine, TIME_OUT);
     }
     @NotNull
     public static ProcessOutput template(@NotNull VueSettings settings) throws ExecutionException {
         GeneralCommandLine commandLine = VueCliBuilder.list(settings);
-        return NodeRunner.execute(commandLine, TIME_OUT);
+        return CmdRunner.execute(commandLine, TIME_OUT);
     }
     public static List<String> listTemplate(@NotNull VueSettings settings) throws ExecutionException {
         ProcessOutput out = template(settings);

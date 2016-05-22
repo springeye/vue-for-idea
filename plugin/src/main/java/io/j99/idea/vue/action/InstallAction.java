@@ -1,13 +1,5 @@
 package io.j99.idea.vue.action;
 
-import com.google.common.base.Charsets;
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.ColoredProcessHandler;
-import com.intellij.execution.process.OSProcessHandler;
-import com.intellij.execution.process.ProcessOutput;
-import com.intellij.internal.statistic.UsageTrigger;
-import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -17,9 +9,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.io.IOUtil;
 import io.j99.idea.vue.cli.NpmUtils;
-import io.j99.idea.vue.cli.nodejs.NodeRunner;
 import io.j99.idea.vue.component.VueProjectSettingsComponent;
 import io.j99.idea.vue.module.VueProjectWizardData;
 import io.j99.idea.vue.settings.SettingStorage;

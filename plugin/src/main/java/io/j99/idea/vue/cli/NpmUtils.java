@@ -6,7 +6,6 @@ import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.internal.statistic.UsageTrigger;
 import com.intellij.openapi.progress.ProgressIndicator;
-import io.j99.idea.vue.cli.nodejs.NodeRunner;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,10 +13,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NpmUtils {
     public static void packageInstall(ProgressIndicator progressIndicator, @NotNull String cwd, String node, String exe){
-        GeneralCommandLine cmd = NodeRunner.createCommandLine(cwd, node, exe);
+        GeneralCommandLine cmd = CmdRunner.createCommandLine(cwd, node, exe);
         cmd.addParameter("i");
         try {
-            ProcessOutput out = NodeRunner.execute(cmd, new NodeRunner.ProcessListener() {
+            ProcessOutput out = CmdRunner.execute(cmd, new CmdRunner.ProcessListener() {
                 @Override
                 public void onError(OSProcessHandler processHandler, String text) {
                 }
@@ -31,7 +30,7 @@ public class NpmUtils {
                 public void onCommand(OSProcessHandler processHandler, String text) {
 
                 }
-            }, NodeRunner.TIME_OUT * 10);
+            }, CmdRunner.TIME_OUT * 10);
             if (out.getExitCode() == 0) {
                 System.out.println(out.getStdout());
             } else {

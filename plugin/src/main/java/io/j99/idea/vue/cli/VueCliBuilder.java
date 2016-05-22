@@ -1,7 +1,6 @@
 package io.j99.idea.vue.cli;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
-import io.j99.idea.vue.cli.nodejs.NodeRunner;
 import org.jetbrains.annotations.NotNull;
 
 final class VueCliBuilder {
@@ -26,7 +25,7 @@ final class VueCliBuilder {
 
     @NotNull
     static GeneralCommandLine createCommandLine(@NotNull VueSettings settings) {
-        return NodeRunner.createCommandLine(settings.cwd, settings.node, settings.vueExePath);
+        return CmdRunner.createCommandLine(settings.cwd, settings.node, settings.vueExePath);
     }
 
 }

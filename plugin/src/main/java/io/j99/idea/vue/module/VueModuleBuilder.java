@@ -33,9 +33,8 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import io.j99.idea.vue.VueIcons;
-import io.j99.idea.vue.action.InstallAction;
 import io.j99.idea.vue.cli.NpmUtils;
-import io.j99.idea.vue.cli.nodejs.NodeRunner;
+import io.j99.idea.vue.cli.CmdRunner;
 import io.j99.idea.vue.component.VueProjectSettingsComponent;
 import io.j99.idea.vue.settings.SettingStorage;
 import org.jdesktop.swingx.util.OS;
@@ -87,7 +86,7 @@ public class VueModuleBuilder extends ModuleBuilder {
             public void run() {
 
                 try {
-                    NodeRunner.ProcessListener listener = new NodeRunner.ProcessListener() {
+                    CmdRunner.ProcessListener listener = new CmdRunner.ProcessListener() {
                         @Override
                         public void onError(OSProcessHandler processHandler, String text) {
 
@@ -95,16 +94,18 @@ public class VueModuleBuilder extends ModuleBuilder {
 
                         @Override
                         public void onOutput(OSProcessHandler processHandler, String text) {
-                            if (text.startsWith("Project name") || text.startsWith("Project description:") || text.startsWith("Author") || text.startsWith("private")) {
-                                try {
-                                    System.out.println(text);
-                                    OutputStream processInput = processHandler.getProcessInput();
-                                    processInput.write(System.getProperty("line.separator").getBytes());
+                            try {
+                                System.out.println(text);
+                                OutputStream processInput = processHandler.getProcessInput();
+                                if (processInput != null && text.startsWith("?")) {
+                                    processInput.write("".getBytes());
                                     processInput.flush();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
                                 }
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
+
                         }
 
                         @Override
@@ -115,7 +116,7 @@ public class VueModuleBuilder extends ModuleBuilder {
                     ProgressIndicator progressIndicator = ProgressManager.getInstance().getProgressIndicator();
                     progressIndicator.setText("Creating...");
                     File tempProject = createTemp();
-                    GeneralCommandLine cmd = NodeRunner.createCommandLine(tempProject.getPath(), wizardData.sdk.nodePath, wizardData.sdk.vuePath);
+                    GeneralCommandLine cmd = CmdRunner.createCommandLine(tempProject.getPath(), wizardData.sdk.nodePath, wizardData.sdk.vuePath);
                     cmd.addParameter("init");
                     cmd.addParameter(wizardData.myTemplate.getName());
                     cmd.addParameter(moduleName);
@@ -127,7 +128,7 @@ public class VueModuleBuilder extends ModuleBuilder {
                             new Notification("Vue Generator", title, fullMessage, NotificationType.INFORMATION)
                     );
 
-                    ProcessOutput out = NodeRunner.execute(cmd, listener, NodeRunner.TIME_OUT);
+                    ProcessOutput out = CmdRunner.execute(cmd, listener, CmdRunner.TIME_OUT);
                     if (out.getExitCode() == 0) {
                         setNodeAndVue(modifiableRootModel, wizardData);
                         File[] array = tempProject.listFiles();
@@ -182,7 +183,7 @@ public class VueModuleBuilder extends ModuleBuilder {
                     if (process.waitFor() == 0) {
                         String npmExe = inBr.readLine();
                         if (StringUtil.isNotEmpty(npmExe)) {
-                            NpmUtils.packageInstall(progressIndicator,baseDir.getPath(), data.sdk.nodePath, npmExe);
+                            NpmUtils.packageInstall(progressIndicator, baseDir.getPath(), data.sdk.nodePath, npmExe);
                         } else {
                             VueProjectSettingsComponent.showNotification("please install npm!", NotificationType.WARNING);
                         }

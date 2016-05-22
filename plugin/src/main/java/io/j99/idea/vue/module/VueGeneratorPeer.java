@@ -23,13 +23,11 @@ import com.intellij.util.ui.AsyncProcessIcon;
 import com.intellij.xml.util.XmlStringUtil;
 import io.j99.idea.vue.VueBundle;
 import io.j99.idea.vue.VueIcons;
-import io.j99.idea.vue.cli.nodejs.NodeRunner;
+import io.j99.idea.vue.cli.CmdRunner;
 import io.j99.idea.vue.component.VueProjectSettingsComponent;
 import io.j99.idea.vue.network.Network;
 import io.j99.idea.vue.network.model.TemplateModel;
 import io.j99.idea.vue.sdk.VueSdkUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,7 +76,7 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
         @Override
         public void run() {
             try {
-                ProcessOutput out = NodeRunner.execute(cmd, NodeRunner.TIME_OUT);
+                ProcessOutput out = CmdRunner.execute(cmd, CmdRunner.TIME_OUT);
                 callback.onEnd(out);
             } catch (ExecutionException e) {
                 e.printStackTrace();
@@ -139,7 +137,7 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
                     myErrorLabel.setVisible(true);
                     return;
                 }
-                GeneralCommandLine cmd = NodeRunner.createCommandLine(FileUtil.getTempDirectory(), nodePath, path);
+                GeneralCommandLine cmd = CmdRunner.createCommandLine(FileUtil.getTempDirectory(), nodePath, path);
                 cmd.addParameter("-V");
                 RunTask task=new RunTask(cmd, new RunTaskCallback() {
                     @Override
