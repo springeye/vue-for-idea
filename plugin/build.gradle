@@ -7,7 +7,7 @@ intellij {
     type = 'IU'
     version 'IU-15.0.2'
     pluginName 'vue-for-idea'
-    plugins = ['JavaScriptLanguage']
+    plugins = ['JavaScriptLanguage', 'CoffeeScript']
     updateSinceUntilBuild false
     sameSinceUntilBuild false
 //    downloadSources !Boolean.valueOf(System.getenv('CI'))
@@ -15,11 +15,11 @@ intellij {
     publish {
         username 'henjue'
         pluginId '8123'
-        password Boolean.valueOf(System.getenv('CI'))?System.getenv('PLUGIN_PASSWORD'):PLUGIN_PASSWORD
+        password Boolean.valueOf(System.getenv('CI')) ? System.getenv('PLUGIN_PASSWORD') : PLUGIN_PASSWORD
         channel System.getenv('PLUGIN_CHANNEL') ?: ''
     }
 }
-dependencies{
+dependencies {
     compile group: 'org.codehaus.jettison', name: 'jettison', version: '1.3.7'
 }
 group 'io.j99'

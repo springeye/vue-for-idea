@@ -42,7 +42,7 @@ public class VueProjectSettingsComponent implements ProjectComponent {
 
     @Override
     public void initComponent() {
-            isSettingsValid();
+        isSettingsValid();
     }
 
     @Override

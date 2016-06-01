@@ -70,6 +70,7 @@
         <fileTypeFactory implementation="io.j99.idea.vue.VueFileTypeFactory"/>
         <syntaxHighlighter key="Vue" implementationClass="io.j99.idea.vue.highlighter.VueSyntaxHighlighter"/>
         <xml.attributeDescriptorsProvider implementation="io.j99.idea.vue.component.VueAttributeDescriptorProvider"/>
+        <multiHostInjector implementation="io.j99.idea.vue.VueLanguageInjector"/>
     </extensions>
 
     <actions>
