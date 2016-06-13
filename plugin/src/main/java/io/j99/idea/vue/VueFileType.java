@@ -1,5 +1,7 @@
 package io.j99.idea.vue;
 
+import com.intellij.lang.xhtml.XHTMLLanguage;
+import com.intellij.lang.xml.XMLLanguage;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +16,7 @@ public class VueFileType extends LanguageFileType {
     public static final String[] DEFAULT_ASSOCIATED_EXTENSIONS = {"vue"};
 
     protected VueFileType() {
-        super(VueLanguage.INSTANCE);
+        super(XHTMLLanguage.INSTANCE);
     }
 
     @NotNull

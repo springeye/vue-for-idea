@@ -6,4 +6,5 @@ import com.intellij.ide.highlighter.HtmlFileHighlighter;
  * Created by apple on 16/2/26.
  */
 public class VueSyntaxHighlighter extends HtmlFileHighlighter {
+
 }
