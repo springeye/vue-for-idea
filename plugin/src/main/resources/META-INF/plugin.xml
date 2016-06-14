@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>io.j99.idea.vue</id>
     <name>vue-for-idea</name>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <vendor email="henjue@gmail.com" url="https://github.com/henjue/vue-for-idea"/>
 
     <description><![CDATA[
@@ -11,6 +11,8 @@
     <change-notes><![CDATA[
         <html>
         <dl>
+            <dt>20160614</dt>
+            <dd>Highlighter(Auto completion) support LESS,SASS,SCSS,Stylus,CSS,ES6,CoffeeScript,JavaScript</dd>
             <dt>20160522</dt>
             <dd>fix node path err in windows</dd>
             <dt>20160515</dt>

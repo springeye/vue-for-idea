@@ -35,7 +35,6 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
         ourInlineScriptFileType = provider != null ? provider.getFileType() : null;
     }
 
-    private final FileType ourStyleFileType;// = FileTypeManager.getInstance().getStdFileType("CSS");
     protected Lexer elLexer;
     private Lexer embeddedLexer;
     private final Map<String, Lexer> scriptLexers = new HashMap<String, Lexer>();
@@ -47,13 +46,11 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
     }
 
     public VueHighlightingLexer(FileType styleFileType) {
-        this(new MergingLexerAdapter(new FlexAdapter(new _HtmlLexer()), TOKENS_TO_MERGE), true, styleFileType);
+        this(new MergingLexerAdapter(new FlexAdapter(new _HtmlLexer()), TOKENS_TO_MERGE), true);
     }
 
-    protected VueHighlightingLexer(Lexer lexer, boolean caseInsensitive, FileType styleFileType) {
+    protected VueHighlightingLexer(Lexer lexer, boolean caseInsensitive) {
         super(lexer, caseInsensitive);
-        ourStyleFileType = styleFileType;
-
         XmlEmbeddmentHandler value = new XmlEmbeddmentHandler();
         registerHandler(XmlTokenType.XML_ATTRIBUTE_VALUE_TOKEN, value);
         registerHandler(XmlTokenType.XML_DATA_CHARACTERS, value);
@@ -86,22 +83,13 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
                     if (currentStylesheetElementType != null) {
                         Language language = currentStylesheetElementType.getLanguage();
                         styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(language, null, null).getHighlightingLexer();
-                    } else if (ourStyleFileType != null) {
-                        SyntaxHighlighter highlighter = SyntaxHighlighterFactory.getSyntaxHighlighter(ourStyleFileType, null, null);
-                        LOG.assertTrue(highlighter != null, ourStyleFileType);
-                        styleLexer = highlighter.getHighlightingLexer();
                     } else {
-                        styleLexer = null;
+                        styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(PlainTextLanguage.INSTANCE, null, null).getHighlightingLexer();
                     }
                     styleLexers.put(styleType, styleLexer);
                 } else if (hasSeenAttribute()) {
-                    if (ourStyleFileType == null) {
-                        styleLexer = null;
-                    } else {
-                        SyntaxHighlighter highlighter = SyntaxHighlighterFactory.getSyntaxHighlighter(ourStyleFileType, null, null);
-                        LOG.assertTrue(highlighter != null, ourStyleFileType);
-                        styleLexer = highlighter.getHighlightingLexer();
-                    }
+                    styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(PlainTextLanguage.INSTANCE, null, null).getHighlightingLexer();
+
                 }
             }
             newLexer = styleLexer;

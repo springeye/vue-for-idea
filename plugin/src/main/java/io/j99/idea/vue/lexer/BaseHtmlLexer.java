@@ -19,12 +19,14 @@ import com.intellij.codeInsight.completion.CompletionUtilCore;
 import com.intellij.lang.HtmlScriptContentProvider;
 import com.intellij.lang.Language;
 import com.intellij.lang.LanguageHtmlScriptContentProvider;
+import com.intellij.lang.css.CSSLanguage;
 import com.intellij.lang.html.HTMLLanguage;
 import com.intellij.lang.javascript.JavaScriptSupportLoader;
 import com.intellij.lang.javascript.JavascriptLanguage;
 import com.intellij.lexer.DelegateLexer;
 import com.intellij.lexer.EmbeddedTokenTypesProvider;
 import com.intellij.lexer.Lexer;
+import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.impl.source.tree.TreeUtil;
@@ -40,10 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.activation.MimetypesFileTypeMap;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * @author Maxim.Mossienko
@@ -57,10 +56,10 @@ abstract class BaseHtmlLexer extends DelegateLexer {
     private static final int SEEN_CONTENT_TYPE = 0x400;
     private static final int SEEN_STYLESHEET_TYPE = 0x800;
     protected static final int BASE_STATE_SHIFT = 11;
-    @Nullable
-    protected static final Language ourDefaultLanguage = Language.findLanguageByID("JavaScript");
-    @Nullable
-    protected static final Language ourDefaultStyleLanguage = Language.findLanguageByID("CSS");
+//    @Nullable
+//    protected static final Language ourDefaultLanguage = Language.findLanguageByID("JavaScript");
+//    @Nullable
+//    protected static final Language ourDefaultStyleLanguage = Language.findLanguageByID("CSS");
 
     protected boolean seenTag;
     protected boolean seenAttribute;
@@ -194,24 +193,28 @@ abstract class BaseHtmlLexer extends DelegateLexer {
 
     @Nullable
     protected Language getStyleLanguage() {
+        Language ourDefaultStyleLanguage = Language.findLanguageByID("CSS");
         if (ourDefaultStyleLanguage != null && styleType != null) {
             String stylesheetPrefix = "text/";
+            List<Language> dialects = ourDefaultStyleLanguage.getDialects();
+            dialects.add(CSSLanguage.INSTANCE);
             if (StringUtil.startsWith(styleType, stylesheetPrefix)) {
                 String languageName = styleType.substring(stylesheetPrefix.length()).trim();
-                for (Language language : ourDefaultStyleLanguage.getDialects()) {
+                for (Language language : dialects) {
                     if (languageName.equals(language.getID().toLowerCase(Locale.US))) {
                         return language;
                     }
                 }
+
             } else {
-                for (Language language : ourDefaultStyleLanguage.getDialects()) {
+                for (Language language : dialects) {
                     if (styleType.equals(language.getID().toLowerCase(Locale.US))) {
                         return language;
                     }
                 }
             }
         }
-        return ourDefaultStyleLanguage;
+        return null;
     }
 
     @Nullable
@@ -236,13 +239,15 @@ abstract class BaseHtmlLexer extends DelegateLexer {
 
     @Nullable
     protected static HtmlScriptContentProvider findScriptContentProvider(@Nullable String mimeType) {
-        if (StringUtil.isEmpty(mimeType)) {
-            return ourDefaultLanguage != null ? LanguageHtmlScriptContentProvider.getScriptContentProvider(ourDefaultLanguage) : null;
-        }
+        if (mimeType == null) return null;
         final Language language;
         switch (mimeType) {
             case "coffee":
                 language = CoffeeScriptLanguage.INSTANCE;
+                break;
+            case "JavaScript":
+            case "javascript":
+                language = JavascriptLanguage.INSTANCE;
                 break;
             case "es6":
             case "babel":
