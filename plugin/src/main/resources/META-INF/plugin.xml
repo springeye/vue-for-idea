@@ -71,10 +71,10 @@
         <projectConfigurable groupId="language" id="vue.settings" instance="io.j99.idea.vue.settings.VueSettingsPage"/>
         <moduleBuilder builderClass="io.j99.idea.vue.module.VueModuleBuilder"/>
         <fileTypeFactory implementation="io.j99.idea.vue.VueFileTypeFactory"/>
-        <!--<syntaxHighlighter key="Vue" implementationClass="io.j99.idea.vue.highlighter.VueSyntaxHighlighter"/>-->
         <xml.attributeDescriptorsProvider implementation="io.j99.idea.vue.component.VueAttributeDescriptorProvider"/>
         <lang.syntaxHighlighterFactory key="Vue"
                                        implementationClass="io.j99.idea.vue.highlighter.VueSyntaxHighlighterFactory"/>
+        <lang.parserDefinition language="Vue" implementationClass="io.j99.idea.vue.psi.VueParserDefinition"/>
     </extensions>
 
     <actions>
