@@ -7,7 +7,7 @@ intellij {
     type = 'IU'
     version 'IU-15.0.2'
     pluginName 'vue-for-idea'
-    plugins = ['JavaScriptLanguage', 'CoffeeScript']
+    plugins = ['JavaScriptLanguage', 'coffeescript', 'sass', 'CSS', 'jade']
     updateSinceUntilBuild false
     sameSinceUntilBuild false
 //    downloadSources !Boolean.valueOf(System.getenv('CI'))
