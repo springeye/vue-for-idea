@@ -16,7 +16,7 @@ public class VueFileType extends LanguageFileType {
     public static final String[] DEFAULT_ASSOCIATED_EXTENSIONS = {"vue"};
 
     protected VueFileType() {
-        super(XHTMLLanguage.INSTANCE);
+        super(VueLanguage.INSTANCE);
     }
 
     @NotNull
