@@ -13,7 +13,7 @@ import javax.swing.*;
 /**
  * Created by apple on 16/1/22.
  */
-public class VueModuleWizardStep extends ModuleWizardStep implements Disposable{
+public class VueModuleWizardStep extends ModuleWizardStep implements Disposable {
     private final WizardContext myContext;
     private final VueGeneratorPeer myPeer;
 
@@ -39,13 +39,15 @@ public class VueModuleWizardStep extends ModuleWizardStep implements Disposable{
     public void updateDataModel() {
         final ProjectBuilder projectBuilder = myContext.getProjectBuilder();
         if (projectBuilder instanceof VueModuleBuilder) {
-            ((VueModuleBuilder)projectBuilder).setWizardData(myPeer.getSettings());
+            ((VueModuleBuilder) projectBuilder).setWizardData(myPeer.getSettings());
         }
     }
+
     @Override
     public boolean validate() throws ConfigurationException {
         return myPeer.validateInIntelliJ();
     }
+
     @Override
     public void dispose() {
 
