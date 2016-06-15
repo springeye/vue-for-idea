@@ -78,6 +78,7 @@
                                        implementationClass="io.j99.idea.vue.highlighter.VueSyntaxHighlighterFactory"/>
         <lang.parserDefinition language="Vue" implementationClass="io.j99.idea.vue.psi.VueParserDefinition"/>
         <lang.formatter language="Vue" implementationClass="io.j99.idea.vue.VueFormattingModelBuilder"/>
+        <lang.commenter language="Vue" implementationClass="com.intellij.lang.xml.XmlCommenter"/>
     </extensions>
 
     <actions>
