@@ -4,6 +4,8 @@ import com.intellij.lang.HtmlInlineScriptTokenTypesProvider;
 import com.intellij.lang.HtmlScriptContentProvider;
 import com.intellij.lang.Language;
 import com.intellij.lang.LanguageHtmlInlineScriptTokenTypesProvider;
+import com.intellij.lang.css.CSSLanguage;
+import com.intellij.lang.javascript.JavascriptLanguage;
 import com.intellij.lexer.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
@@ -84,11 +86,11 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
                         Language language = currentStylesheetElementType.getLanguage();
                         styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(language, null, null).getHighlightingLexer();
                     } else {
-                        styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(PlainTextLanguage.INSTANCE, null, null).getHighlightingLexer();
+                        styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(CSSLanguage.INSTANCE, null, null).getHighlightingLexer();
                     }
                     styleLexers.put(styleType, styleLexer);
                 } else if (hasSeenAttribute()) {
-                    styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(PlainTextLanguage.INSTANCE, null, null).getHighlightingLexer();
+                    styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(CSSLanguage.INSTANCE, null, null).getHighlightingLexer();
 
                 }
             }
@@ -101,7 +103,7 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
                     if (provider != null) {
                         scriptLexer = provider.getHighlightingLexer();
                     } else {
-                        scriptLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(PlainTextLanguage.INSTANCE, null, null).getHighlightingLexer();
+                        scriptLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(JavascriptLanguage.INSTANCE, null, null).getHighlightingLexer();
                     }
                 } else if (hasSeenAttribute()) {
                     SyntaxHighlighter syntaxHighlighter =

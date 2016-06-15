@@ -188,7 +188,9 @@ abstract class BaseHtmlLexer extends DelegateLexer {
     @Nullable
     protected Language getScriptLanguage() {
         Collection<Language> instancesByMimeType = Language.findInstancesByMimeType(scriptType != null ? scriptType.trim() : null);
-        return instancesByMimeType.isEmpty() ? null : instancesByMimeType.iterator().next();
+        Language language = instancesByMimeType.isEmpty() ? null : instancesByMimeType.iterator().next();
+        if (language == null) language = JavascriptLanguage.INSTANCE;
+        return language;
     }
 
     @Nullable
@@ -214,7 +216,7 @@ abstract class BaseHtmlLexer extends DelegateLexer {
                 }
             }
         }
-        return null;
+        return CSSLanguage.INSTANCE;
     }
 
     @Nullable
@@ -254,7 +256,7 @@ abstract class BaseHtmlLexer extends DelegateLexer {
                 language = JavaScriptSupportLoader.ECMA_SCRIPT_6;
                 break;
             default:
-                language = null;
+                language = JavascriptLanguage.INSTANCE;
                 break;
 
         }
