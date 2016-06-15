@@ -13,6 +13,7 @@
         <dl>
             <dt>20160615</dt>
             <dd>support formatter and commenter</dd>
+            <dd>default use css and javascript</dd>
             <dt>20160614</dt>
             <dd>Highlighter(Auto completion) support LESS,SASS,SCSS,Stylus,CSS,ES6,CoffeeScript,JavaScript</dd>
             <dt>20160522</dt>
