@@ -75,6 +75,7 @@
         <projectConfigurable groupId="language" id="vue.settings" instance="io.j99.idea.vue.settings.VueSettingsPage"/>
         <moduleBuilder builderClass="io.j99.idea.vue.module.VueModuleBuilder"/>
         <fileTypeFactory implementation="io.j99.idea.vue.VueFileTypeFactory"/>
+        <treeStructureProvider implementation="io.j99.idea.vue.structure.VueTreeStructureProvider"/>
         <xml.attributeDescriptorsProvider implementation="io.j99.idea.vue.component.VueAttributeDescriptorProvider"/>
         <lang.syntaxHighlighterFactory key="Vue"
                                        implementationClass="io.j99.idea.vue.highlighter.VueSyntaxHighlighterFactory"/>
