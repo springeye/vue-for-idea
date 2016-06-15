@@ -10,6 +10,15 @@
 * [Node](https://nodejs.org)
 * [Vue-cli](https://github.com/vuejs/vue-cli)
 
+# You need to learn
+## required
+* [vue loader](http://vue-loader.vuejs.org/en/index.html)
+
+## optional
+* [webpack](http://webpack.github.io/docs/tutorials/getting-started/)
+
+* [browserify](https://github.com/substack/node-browserify/wiki)
+
 ##todo
 - [x] highlighter
 - [x] autocomplete
