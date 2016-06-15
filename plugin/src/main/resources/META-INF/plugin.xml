@@ -82,6 +82,14 @@
         <lang.parserDefinition language="Vue" implementationClass="io.j99.idea.vue.psi.VueParserDefinition"/>
         <lang.formatter language="Vue" implementationClass="io.j99.idea.vue.VueFormattingModelBuilder"/>
         <lang.commenter language="Vue" implementationClass="com.intellij.lang.xml.XmlCommenter"/>
+        <lang.psiStructureViewFactory language="Vue"
+                                      implementationClass="com.intellij.lang.xml.XmlStructureViewBuilderFactory"/>
+        <codeInsight.wordCompletionFilter language="Vue"
+                                          implementationClass="com.intellij.lang.xml.XmlWordCompletionFilter"/>
+        <codeInsight.parameterInfo language="Vue"
+                                   implementationClass="com.intellij.codeInsight.hint.api.impls.XmlParameterInfoHandler"/>
+        <lang.foldingBuilder language="Vue" implementationClass="com.intellij.lang.xml.XmlFoldingBuilder"/>
+        <lang.ast.factory language="Vue" implementationClass="com.intellij.lang.xml.XmlASTFactory"/>
     </extensions>
 
     <actions>
