@@ -77,6 +77,7 @@
         <lang.syntaxHighlighterFactory key="Vue"
                                        implementationClass="io.j99.idea.vue.highlighter.VueSyntaxHighlighterFactory"/>
         <lang.parserDefinition language="Vue" implementationClass="io.j99.idea.vue.psi.VueParserDefinition"/>
+        <lang.formatter language="Vue" implementationClass="io.j99.idea.vue.VueFormattingModelBuilder"/>
     </extensions>
 
     <actions>
