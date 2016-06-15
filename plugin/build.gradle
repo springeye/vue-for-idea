@@ -23,5 +23,5 @@ dependencies {
     compile group: 'org.codehaus.jettison', name: 'jettison', version: '1.3.7'
 }
 group 'io.j99'
-def majorVersion = '1.0.7'
+def majorVersion = '1.0.71'
 version "${Boolean.valueOf(System.getenv('CI')) ? "$majorVersion-${System.getenv('CIRCLE_BUILD_NUM')}" : "$majorVersion"}"
