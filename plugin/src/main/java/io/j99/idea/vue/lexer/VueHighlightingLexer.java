@@ -8,10 +8,7 @@ import com.intellij.lang.css.CSSLanguage;
 import com.intellij.lang.javascript.JavascriptLanguage;
 import com.intellij.lexer.*;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.PlainTextLanguage;
-import com.intellij.openapi.fileTypes.SyntaxHighlighter;
-import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
+import com.intellij.openapi.fileTypes.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.xml.XmlTokenType;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +39,7 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
     private final Map<String, Lexer> scriptLexers = new HashMap<String, Lexer>();
     private final Map<String, Lexer> styleLexers = new HashMap<String, Lexer>();
     private boolean hasNoEmbeddments;
+    private FileType ourStyleFileType = FileTypeManager.getInstance().getStdFileType("CSS");
 
     public VueHighlightingLexer() {
         this(null);
@@ -49,6 +47,9 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
 
     public VueHighlightingLexer(FileType styleFileType) {
         this(new MergingLexerAdapter(new FlexAdapter(new _HtmlLexer()), TOKENS_TO_MERGE), true);
+        if (styleFileType != null) {
+            this.ourStyleFileType = styleFileType;
+        }
     }
 
     protected VueHighlightingLexer(Lexer lexer, boolean caseInsensitive) {
@@ -85,13 +86,22 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
                     if (currentStylesheetElementType != null) {
                         Language language = currentStylesheetElementType.getLanguage();
                         styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(language, null, null).getHighlightingLexer();
+                    } else if (ourStyleFileType != null) {
+                        SyntaxHighlighter highlighter = SyntaxHighlighterFactory.getSyntaxHighlighter(ourStyleFileType, null, null);
+                        LOG.assertTrue(highlighter != null, ourStyleFileType);
+                        styleLexer = highlighter.getHighlightingLexer();
                     } else {
-                        styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(CSSLanguage.INSTANCE, null, null).getHighlightingLexer();
+                        styleLexer = null;
                     }
                     styleLexers.put(styleType, styleLexer);
                 } else if (hasSeenAttribute()) {
-                    styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(CSSLanguage.INSTANCE, null, null).getHighlightingLexer();
-
+                    if (ourStyleFileType == null) {
+                        styleLexer = null;
+                    } else {
+                        SyntaxHighlighter highlighter = SyntaxHighlighterFactory.getSyntaxHighlighter(ourStyleFileType, null, null);
+                        LOG.assertTrue(highlighter != null, ourStyleFileType);
+                        styleLexer = highlighter.getHighlightingLexer();
+                    }
                 }
             }
             newLexer = styleLexer;
@@ -103,7 +113,7 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
                     if (provider != null) {
                         scriptLexer = provider.getHighlightingLexer();
                     } else {
-                        scriptLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(JavascriptLanguage.INSTANCE, null, null).getHighlightingLexer();
+                        scriptLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(PlainTextLanguage.INSTANCE, null, null).getHighlightingLexer();
                     }
                 } else if (hasSeenAttribute()) {
                     SyntaxHighlighter syntaxHighlighter =

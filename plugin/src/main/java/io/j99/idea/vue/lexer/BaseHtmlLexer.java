@@ -56,10 +56,10 @@ abstract class BaseHtmlLexer extends DelegateLexer {
     private static final int SEEN_CONTENT_TYPE = 0x400;
     private static final int SEEN_STYLESHEET_TYPE = 0x800;
     protected static final int BASE_STATE_SHIFT = 11;
-//    @Nullable
-//    protected static final Language ourDefaultLanguage = Language.findLanguageByID("JavaScript");
-//    @Nullable
-//    protected static final Language ourDefaultStyleLanguage = Language.findLanguageByID("CSS");
+    @Nullable
+    protected static final Language ourDefaultLanguage = Language.findLanguageByID("JavaScript");
+    @Nullable
+    protected static final Language ourDefaultStyleLanguage = Language.findLanguageByID("CSS");
 
     protected boolean seenTag;
     protected boolean seenAttribute;
@@ -195,7 +195,6 @@ abstract class BaseHtmlLexer extends DelegateLexer {
 
     @Nullable
     protected Language getStyleLanguage() {
-        Language ourDefaultStyleLanguage = Language.findLanguageByID("CSS");
         if (ourDefaultStyleLanguage != null && styleType != null) {
             String stylesheetPrefix = "text/";
             List<Language> dialects = ourDefaultStyleLanguage.getDialects();
@@ -216,7 +215,7 @@ abstract class BaseHtmlLexer extends DelegateLexer {
                 }
             }
         }
-        return CSSLanguage.INSTANCE;
+        return ourDefaultStyleLanguage;
     }
 
     @Nullable
@@ -241,7 +240,9 @@ abstract class BaseHtmlLexer extends DelegateLexer {
 
     @Nullable
     protected static HtmlScriptContentProvider findScriptContentProvider(@Nullable String mimeType) {
-        if (mimeType == null) return null;
+        if (StringUtil.isEmpty(mimeType)) {
+            return ourDefaultLanguage != null ? LanguageHtmlScriptContentProvider.getScriptContentProvider(ourDefaultLanguage) : null;
+        }
         final Language language;
         switch (mimeType) {
             case "coffee":
