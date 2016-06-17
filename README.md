@@ -1,5 +1,6 @@
 # Vue for Idea
 
+[![Build Status](https://travis-ci.org/henjue/vue-for-idea.svg?branch=master)](https://travis-ci.org/henjue/vue-for-idea)
 [![Join the chat at https://gitter.im/henjue/vue-for-idea](https://badges.gitter.im/henjue/vue-for-idea.svg)](https://gitter.im/henjue/vue-for-idea?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Requires
