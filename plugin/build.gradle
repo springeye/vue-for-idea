@@ -16,12 +16,13 @@ intellij {
         username 'henjue'
         pluginId '8123'
         password Boolean.valueOf(System.getenv('CI')) ? System.getenv('PLUGIN_PASSWORD') : PLUGIN_PASSWORD
-        channel System.getenv('PLUGIN_CHANNEL') ?: ''
+//        channel System.getenv('PLUGIN_CHANNEL') ?: ''
+        channel 'alpha'
     }
 }
 dependencies {
     compile group: 'org.codehaus.jettison', name: 'jettison', version: '1.3.7'
 }
 group 'io.j99'
-def majorVersion = '1.0.73'
+def majorVersion = '1.0.74'
 version "${Boolean.valueOf(System.getenv('CI')) ? "$majorVersion-${System.getenv('CIRCLE_BUILD_NUM')}" : "$majorVersion"}"

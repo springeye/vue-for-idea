@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>io.j99.idea.vue</id>
     <name>vue-for-idea</name>
-    <version>1.0.73</version>
+    <version>1.0.74</version>
     <vendor email="henjue@gmail.com" url="https://github.com/henjue/vue-for-idea"/>
 
     <description><![CDATA[
