@@ -16,8 +16,7 @@ intellij {
         username 'henjue'
         pluginId '8123'
         password Boolean.valueOf(System.getenv('CI')) ? System.getenv('PLUGIN_PASSWORD') : PLUGIN_PASSWORD
-//        channel System.getenv('PLUGIN_CHANNEL') ?: ''
-        channel 'alpha'
+        channel System.getenv('PLUGIN_CHANNEL') ?: ''
     }
 }
 dependencies {
