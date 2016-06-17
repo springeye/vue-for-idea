@@ -29,10 +29,11 @@
 - [ ] other feature
 
 #Install the Plugin
- * Click "Preferences"->"Plugins"->"Browse Repositories",search "vue-for-idea".
-## For alpha version:
+ Click "Preferences"->"Plugins"->"Browse Repositories",search "vue-for-idea".
+## Install the Plugin Alpha version:
 1. Use [the instructions](https://www.jetbrains.com/help/idea/2016.1/managing-enterprise-plugin-repositories.html?origin=old_help)
 2. Paste the URL 
-
-    ```https://plugins.jetbrains.com/plugins/alpha/8123```
+```
+https://plugins.jetbrains.com/plugins/alpha/8123
+```
  
