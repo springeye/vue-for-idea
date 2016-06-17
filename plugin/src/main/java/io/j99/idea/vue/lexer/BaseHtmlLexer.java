@@ -57,13 +57,14 @@ abstract class BaseHtmlLexer extends DelegateLexer {
     private static final int SEEN_STYLESHEET_TYPE = 0x800;
     protected static final int BASE_STATE_SHIFT = 11;
     @Nullable
-    protected static final Language ourDefaultLanguage = Language.findLanguageByID("JavaScript");
+    protected static final Language ourDefaultLanguage = JavaScriptSupportLoader.ECMA_SCRIPT_6;
     @Nullable
     protected static final Language ourDefaultStyleLanguage = Language.findLanguageByID("CSS");
 
     protected boolean seenTag;
     protected boolean seenAttribute;
     protected boolean seenStyle;
+    protected boolean seenLangAttribute = false;
     protected boolean seenScript;
 
     @Nullable
@@ -106,19 +107,24 @@ abstract class BaseHtmlLexer extends DelegateLexer {
             int tokenStart = lexer.getTokenStart();
             final char firstCh = buffer.charAt(tokenStart);
 
+            @NonNls String attrName = TreeUtil.getTokenText(lexer);
             if (seenScript && !seenTag) {
                 seenContentType = false;
                 if (((firstCh == 'l' || firstCh == 't') || (caseInsensitive && (firstCh == 'L' || firstCh == 'T')))) {
-                    @NonNls String name = TreeUtil.getTokenText(lexer);
-                    seenContentType = Comparing.strEqual("lang", name, !caseInsensitive);
+                    seenContentType = Comparing.strEqual("lang", attrName, !caseInsensitive);
+                    seenLangAttribute = true;
                 }
                 return;
             }
             if (seenStyle && !seenTag) {
                 seenStylesheetType = false;
                 if (firstCh == 'r' || caseInsensitive && firstCh == 'R') {
-                    seenStylesheetType = Comparing.strEqual(TreeUtil.getTokenText(lexer), "rel", !caseInsensitive);
+                    seenStylesheetType = Comparing.strEqual(attrName, "rel", !caseInsensitive);
                 }
+                if (firstCh == 'l' || caseInsensitive && firstCh == 'L') {
+                    seenLangAttribute = Comparing.strEqual("lang", attrName, !caseInsensitive);
+                }
+
                 return;
             }
 
@@ -128,7 +134,7 @@ abstract class BaseHtmlLexer extends DelegateLexer {
                 return; // optimization
             }
 
-            String name = TreeUtil.getTokenText(lexer);
+            String name = attrName;
             if (caseInsensitive) name = name.toLowerCase();
 
             final boolean style = name.equals(TOKEN_STYLE);
@@ -189,7 +195,6 @@ abstract class BaseHtmlLexer extends DelegateLexer {
     protected Language getScriptLanguage() {
         Collection<Language> instancesByMimeType = Language.findInstancesByMimeType(scriptType != null ? scriptType.trim() : null);
         Language language = instancesByMimeType.isEmpty() ? null : instancesByMimeType.iterator().next();
-        if (language == null) language = JavascriptLanguage.INSTANCE;
         return language;
     }
 
@@ -215,7 +220,8 @@ abstract class BaseHtmlLexer extends DelegateLexer {
                 }
             }
         }
-        return ourDefaultStyleLanguage;
+        return null;
+
     }
 
     @Nullable
@@ -227,7 +233,7 @@ abstract class BaseHtmlLexer extends DelegateLexer {
     @Nullable
     protected IElementType getCurrentStylesheetElementType() {
         Language language = getStyleLanguage();
-        if (language != null) {
+        if (language != null && seenLangAttribute && !seenAttribute) {
             for (EmbeddedTokenTypesProvider provider : EmbeddedTokenTypesProvider.EXTENSION_POINT_NAME.getExtensions()) {
                 IElementType elementType = provider.getElementType();
                 if (language.is(elementType.getLanguage())) {
@@ -241,25 +247,19 @@ abstract class BaseHtmlLexer extends DelegateLexer {
     @Nullable
     protected static HtmlScriptContentProvider findScriptContentProvider(@Nullable String mimeType) {
         if (StringUtil.isEmpty(mimeType)) {
-            return ourDefaultLanguage != null ? LanguageHtmlScriptContentProvider.getScriptContentProvider(ourDefaultLanguage) : null;
+            return null;
         }
         final Language language;
-        switch (mimeType) {
-            case "coffee":
-                language = CoffeeScriptLanguage.INSTANCE;
-                break;
-            case "JavaScript":
-            case "javascript":
-                language = JavascriptLanguage.INSTANCE;
-                break;
-            case "es6":
-            case "babel":
-                language = JavaScriptSupportLoader.ECMA_SCRIPT_6;
-                break;
-            default:
-                language = JavascriptLanguage.INSTANCE;
-                break;
+        if (mimeType.equals("coffee")) {
+            language = CoffeeScriptLanguage.INSTANCE;
 
+        } else if (mimeType.equals("JavaScript") || mimeType.equals("javascript")) {
+            language = JavascriptLanguage.INSTANCE;
+
+        } else if (mimeType.equals("es6") || mimeType.equals("babel")) {
+            language = JavaScriptSupportLoader.ECMA_SCRIPT_6;
+        } else {
+            language = null;
         }
         if (language != null) {
             HtmlScriptContentProvider scriptContentProvider = LanguageHtmlScriptContentProvider.getScriptContentProvider(language);
@@ -294,8 +294,10 @@ abstract class BaseHtmlLexer extends DelegateLexer {
             seenAttribute = false;
             seenContentType = false;
             seenStylesheetType = false;
+            seenLangAttribute = false;
             scriptType = null;
             styleType = null;
+
         }
     }
 

@@ -1,9 +1,7 @@
 package io.j99.idea.vue.lexer;
 
-import com.intellij.lang.HtmlInlineScriptTokenTypesProvider;
-import com.intellij.lang.HtmlScriptContentProvider;
-import com.intellij.lang.Language;
-import com.intellij.lang.LanguageHtmlInlineScriptTokenTypesProvider;
+import com.intellij.internal.statistic.UsageTrigger;
+import com.intellij.lang.*;
 import com.intellij.lang.css.CSSLanguage;
 import com.intellij.lang.javascript.JavascriptLanguage;
 import com.intellij.lexer.*;
@@ -30,7 +28,7 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
     static {
         // At the moment only JS.
         HtmlInlineScriptTokenTypesProvider provider =
-                LanguageHtmlInlineScriptTokenTypesProvider.getInlineScriptProvider(Language.findLanguageByID("JavaScript"));
+                LanguageHtmlInlineScriptTokenTypesProvider.getInlineScriptProvider(ourDefaultLanguage);
         ourInlineScriptFileType = provider != null ? provider.getFileType() : null;
     }
 
@@ -86,7 +84,7 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
                     if (currentStylesheetElementType != null) {
                         Language language = currentStylesheetElementType.getLanguage();
                         styleLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(language, null, null).getHighlightingLexer();
-                    } else if (ourStyleFileType != null) {
+                    } else if (ourStyleFileType != null && !seenLangAttribute) {
                         SyntaxHighlighter highlighter = SyntaxHighlighterFactory.getSyntaxHighlighter(ourStyleFileType, null, null);
                         LOG.assertTrue(highlighter != null, ourStyleFileType);
                         styleLexer = highlighter.getHighlightingLexer();
@@ -112,8 +110,10 @@ public class VueHighlightingLexer extends BaseHtmlLexer {
                     HtmlScriptContentProvider provider = findScriptContentProvider(scriptType);
                     if (provider != null) {
                         scriptLexer = provider.getHighlightingLexer();
+                    } else if (!seenLangAttribute) {
+                        scriptLexer = LanguageHtmlScriptContentProvider.getScriptContentProvider(ourDefaultLanguage).getHighlightingLexer();
                     } else {
-                        scriptLexer = SyntaxHighlighterFactory.getSyntaxHighlighter(PlainTextLanguage.INSTANCE, null, null).getHighlightingLexer();
+                        scriptLexer = null;
                     }
                 } else if (hasSeenAttribute()) {
                     SyntaxHighlighter syntaxHighlighter =
