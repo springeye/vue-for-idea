@@ -1,0 +1,21 @@
+language: java
+sudo: false
+install:
+  echo "start building"
+env:
+  matrix:
+  - IDEA_VERSION=IU-15.0.2
+  - IDEA_VERSION=LATEST-EAP-SNAPSHOT
+jdk:
+  - oraclejdk8
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+notifications:
+  email: false
+branches:
+  only:
+  - master
+script: 
+  - ./gradlew :plugin:buildPlugin -PideaVersion=$IDEA_VERSION
