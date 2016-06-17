@@ -24,8 +24,8 @@
 - [x] autocomplete
 - [ ] reference contributor and 
 - [ ] Go To Symbol Contributor
-- [-] Support other "lang"
-- [-] new project and new module(80%)
+- [x] Support other "lang"
+- [x] new project and new module(80%)
 - [ ] other feature
 
 #Install the Plugin
