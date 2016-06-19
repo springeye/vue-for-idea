@@ -1,7 +1,6 @@
 # Vue for Idea
 
 [![Build Status](https://travis-ci.org/henjue/vue-for-idea.svg?branch=develop)](https://travis-ci.org/henjue/vue-for-idea)
-
 [![Join the chat at https://gitter.im/henjue/vue-for-idea](https://badges.gitter.im/henjue/vue-for-idea.svg)](https://gitter.im/henjue/vue-for-idea?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Requires
@@ -9,24 +8,6 @@
 * Java 8 
 * [Node](https://nodejs.org)
 * [Vue-cli](https://github.com/vuejs/vue-cli)
-
-# You need to learn
-## required
-* [vue loader](http://vue-loader.vuejs.org/en/index.html)
-
-## optional
-* [webpack](http://webpack.github.io/docs/tutorials/getting-started/)
-
-* [browserify](https://github.com/substack/node-browserify/wiki)
-
-##todo
-- [x] highlighter
-- [x] autocomplete
-- [ ] reference contributor and 
-- [ ] Go To Symbol Contributor
-- [x] Support other "lang"
-- [x] new project and new module(80%)
-- [ ] other feature
 
 #Install the Plugin
  Click "Preferences"->"Plugins"->"Browse Repositories",search "vue-for-idea".
@@ -37,3 +18,13 @@
 https://plugins.jetbrains.com/plugins/alpha/8123
 ```
  
+##Todo
+- [ ] Grammar
+ - [x] highlighter
+ - [x] autocomplete
+ - [ ] reference contributor and 
+ - [ ] Go To Symbol Contributor
+ - [x] Support other "lang"
+- [ ] Project Wizard
+ - [x] new project and new module(test)
+
