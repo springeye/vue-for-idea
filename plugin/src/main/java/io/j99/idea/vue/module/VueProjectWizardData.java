@@ -7,14 +7,20 @@ import org.jetbrains.annotations.NotNull;
  */
 public class VueProjectWizardData {
     public static class Sdk {
-        @NotNull public final String nodePath;
-        @NotNull public final String vuePath;
+        @NotNull
+        public final String nodePath;
+        @NotNull
+        public final String npmPath;
+        @NotNull
+        public final String vuePath;
 
-        public Sdk(@NotNull String nodePath, @NotNull String vuePath) {
+        public Sdk(@NotNull String nodePath, @NotNull String npmPath, @NotNull String vuePath) {
             this.nodePath = nodePath;
+            this.npmPath = npmPath;
             this.vuePath = vuePath;
         }
     }
+
     @NotNull
     public final Sdk sdk;
     @NotNull

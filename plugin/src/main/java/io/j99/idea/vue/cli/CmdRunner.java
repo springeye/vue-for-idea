@@ -19,7 +19,7 @@ public final class CmdRunner {
 
     private static final Logger LOG = Logger.getInstance(CmdRunner.class);
 
-    public static final int TIME_OUT = (int) TimeUnit.SECONDS.toMillis(120L);
+    public static final int TIME_OUT = (int) TimeUnit.SECONDS.toMillis(60L);
 
     /**
      * @param cwd  working directory
@@ -54,11 +54,11 @@ public final class CmdRunner {
     }
 
     public interface ProcessListener {
-        void onError(OSProcessHandler processHandler, String text);
+        void onError(ProcessHandler processHandler, String text);
 
-        void onOutput(OSProcessHandler processHandler, String text);
+        void onOutput(ProcessHandler processHandler, String text);
 
-        void onCommand(OSProcessHandler processHandler, String text);
+        void onCommand(ProcessHandler processHandler, String text);
     }
 
     /**
@@ -106,16 +106,27 @@ public final class CmdRunner {
                 if (outputType.equals(ProcessOutputTypes.STDERR)) {
                     output.appendStderr(event.getText());
                     if (listener != null) {
-                        listener.onError(processHandler, event.getText());
+                        listener.onError(event.getProcessHandler(), event.getText());
                     }
                 } else if (!outputType.equals(ProcessOutputTypes.SYSTEM)) {
                     output.appendStdout(event.getText());
+                    ProcessHandler handler = event.getProcessHandler();
+                    System.out.println(String.format("detachIsDefault:%s,\n" +
+                                    "isProcessTerminated:%s,\n" +
+                                    "isProcessTerminating:%s,\n" +
+                                    "isSilentlyDestroyOnClose:%s,\n" +
+                                    "isStartNotified:%s"
+                            , handler.detachIsDefault(),
+                            handler.isProcessTerminated(),
+                            handler.isProcessTerminating(),
+                            handler.isSilentlyDestroyOnClose(),
+                            handler.isStartNotified()));
                     if (listener != null) {
-                        listener.onOutput(processHandler, event.getText());
+                        listener.onOutput(event.getProcessHandler(), event.getText());
                     }
                 } else if (outputType.equals(ProcessOutputTypes.SYSTEM)) {
                     if (listener != null) {
-                        listener.onCommand(processHandler, event.getText());
+                        listener.onCommand(event.getProcessHandler(), event.getText());
                     }
                 }
             }

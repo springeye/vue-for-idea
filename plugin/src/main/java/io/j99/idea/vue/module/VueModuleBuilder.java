@@ -3,6 +3,7 @@ package io.j99.idea.vue.module;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
+import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
@@ -23,6 +24,7 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.DumbAwareRunnable;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.startup.StartupManager;
@@ -31,6 +33,7 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.DocumentUtil;
 import com.intellij.util.containers.ContainerUtil;
 import io.j99.idea.vue.VueIcons;
 import io.j99.idea.vue.cli.NpmUtils;
@@ -56,13 +59,31 @@ public class VueModuleBuilder extends ModuleBuilder {
     }
 
     @Override
-    public void setupRootModel(ModifiableRootModel modifiableRootModel) throws ConfigurationException {
-        ContentEntry contentEntry = doAddContentEntry(modifiableRootModel);
+    public void setupRootModel(ModifiableRootModel rootModel) throws ConfigurationException {
+        ContentEntry contentEntry = doAddContentEntry(rootModel);
         final VirtualFile baseDir = contentEntry == null ? null : contentEntry.getFile();
         if (baseDir != null) {
-            setupProject(modifiableRootModel, baseDir, myWizardData);
+            setupProject(rootModel, baseDir, myWizardData);
+//            StartupManager.getInstance(rootModel.getProject()).runWhenProjectIsInitialized(new DumbAwareRunnable() {
+//                @Override
+//                public void run() {
+//                    ApplicationManager.getApplication().invokeLater(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            DocumentUtil.writeInRunUndoTransparentAction(new Runnable() {
+//                                @Override
+//                                public void run() {
+//
+//                                }
+//                            });
+//                        }
+//                    });
+//                }
+//            });
+
         }
     }
+
 
     protected static File createTemp() throws IOException {
         return FileUtil.createTempDirectory("intellij-vue-generator", null, false);
@@ -77,6 +98,7 @@ public class VueModuleBuilder extends ModuleBuilder {
     }
 
     static void setupProject(ModifiableRootModel modifiableRootModel, final VirtualFile baseDir, VueProjectWizardData wizardData) {
+
         final String templateName = wizardData.myTemplate.getName();
         Module module = modifiableRootModel.getModule();
         String moduleName = module.getName();
@@ -88,17 +110,17 @@ public class VueModuleBuilder extends ModuleBuilder {
                 try {
                     CmdRunner.ProcessListener listener = new CmdRunner.ProcessListener() {
                         @Override
-                        public void onError(OSProcessHandler processHandler, String text) {
-
+                        public void onError(ProcessHandler processHandler, String text) {
+                            System.err.println("onError:" + text);
                         }
 
                         @Override
-                        public void onOutput(OSProcessHandler processHandler, String text) {
+                        public void onOutput(ProcessHandler processHandler, String text) {
+                            System.out.println("onOutput:" + text);
                             try {
-                                System.out.println(text);
                                 OutputStream processInput = processHandler.getProcessInput();
                                 if (processInput != null && text.startsWith("?")) {
-                                    processInput.write("".getBytes());
+                                    processInput.write((char) 13);
                                     processInput.flush();
                                 }
 
@@ -109,8 +131,8 @@ public class VueModuleBuilder extends ModuleBuilder {
                         }
 
                         @Override
-                        public void onCommand(OSProcessHandler processHandler, String text) {
-
+                        public void onCommand(ProcessHandler processHandler, String text) {
+                            System.out.println("onCommand:" + text);
                         }
                     };
                     ProgressIndicator progressIndicator = ProgressManager.getInstance().getProgressIndicator();
@@ -217,12 +239,12 @@ public class VueModuleBuilder extends ModuleBuilder {
     protected static void saveSettings(VueProjectWizardData.Sdk sdk) {
         SettingStorage settingStorage = SettingStorage.getInstance();
         settingStorage.vueExePath = sdk.vuePath;
-        settingStorage.nodeInterpreter = sdk.nodePath;
+        settingStorage.nodeExePath = sdk.nodePath;
     }
 
     protected VueProjectWizardData.Sdk loadSettings() {
         SettingStorage settingStorage = SettingStorage.getInstance();
-        return new VueProjectWizardData.Sdk(settingStorage.nodeInterpreter, settingStorage.vueExePath);
+        return new VueProjectWizardData.Sdk(settingStorage.nodeExePath, settingStorage.npmExePath, settingStorage.vueExePath);
     }
 
     @Override

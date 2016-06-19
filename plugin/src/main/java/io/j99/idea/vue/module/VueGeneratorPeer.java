@@ -295,7 +295,7 @@ public class VueGeneratorPeer implements WebProjectGenerator.GeneratorPeer<VuePr
         String vuePath = vueBinField.getText().trim();
         String nodePath = nodeInterpreterField.getText().trim();
         TemplateModel template = (TemplateModel) myTemplatesList.getSelectedValue();
-        return new VueProjectWizardData(new VueProjectWizardData.Sdk(nodePath, vuePath), new WebpackTemplate(template.getName(), template.getDescription()));
+        return new VueProjectWizardData(new VueProjectWizardData.Sdk(nodePath, "", vuePath), new WebpackTemplate(template.getName(), template.getDescription()));
     }
 
     @Nullable

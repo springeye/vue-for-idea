@@ -14,7 +14,6 @@ import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ui.TextFieldWithHistory;
 import com.intellij.ui.TextFieldWithHistoryWithBrowseButton;
-import com.intellij.util.NotNullProducer;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.SwingHelper;
 import io.j99.idea.vue.cli.VueFinder;
@@ -43,7 +42,8 @@ public class VueSettingsPage implements Configurable {
     private JPanel panel;
     private JPanel errorPanel;
     private TextFieldWithHistoryWithBrowseButton vueBinField;
-    private TextFieldWithHistoryWithBrowseButton nodeInterpreterField;
+    private TextFieldWithHistoryWithBrowseButton nodeBinField;
+    private TextFieldWithHistoryWithBrowseButton npmBinField;
     private HyperlinkLabel usageLink;
     private JLabel pathToRTBinLabel;
     private JLabel nodeInterpreterLabel;
@@ -52,9 +52,9 @@ public class VueSettingsPage implements Configurable {
 
     public VueSettingsPage(@NotNull final Project project) {
         this.project = project;
-        configVueBinField();
         configNodeField();
-
+        configNpmBinField();
+        configVueBinField();
 
         this.packagesNotificationPanel = new PackagesNotificationPanel(project);
         errorPanel.add(this.packagesNotificationPanel.getComponent(), BorderLayout.CENTER);
@@ -65,19 +65,23 @@ public class VueSettingsPage implements Configurable {
             }
         };
         vueBinField.getChildComponent().getTextEditor().getDocument().addDocumentListener(docAdp);
-        nodeInterpreterField.getChildComponent().getTextEditor().getDocument().addDocumentListener(docAdp);
+        nodeBinField.getChildComponent().getTextEditor().getDocument().addDocumentListener(docAdp);
+        npmBinField.getChildComponent().getTextEditor().getDocument().addDocumentListener(docAdp);
     }
 
     private File getProjectPath() {
-        return new File(project.getBaseDir().getPath());
+        if (project == null) new File(".");
+        try {
+            File file = new File(project.getBaseDir().getPath());
+            return file;
+        } catch (Exception e) {
+            return new File(".");
+        }
+
     }
 
     private void updateLaterInEDT() {
-        UIUtil.invokeLaterIfNeeded(new Runnable() {
-            public void run() {
-                VueSettingsPage.this.update();
-            }
-        });
+        UIUtil.invokeLaterIfNeeded(VueSettingsPage.this::update);
     }
 
     private void update() {
@@ -95,7 +99,8 @@ public class VueSettingsPage implements Configurable {
     private void validate() {
         List<ValidationInfo> errors = new ArrayList<ValidationInfo>();
         validateField(errors, vueBinField, false, "Path to vue-cli is invalid {{LINK}}");
-        validateField(errors, nodeInterpreterField, false, "Path to node interpreter is invalid {{LINK}}");
+        validateField(errors, nodeBinField, false, "Path to node interpreter is invalid {{LINK}}");
+        validateField(errors, npmBinField, false, "Path to npm interpreter is invalid {{LINK}}");
         if (errors.isEmpty()) {
             getVersion();
         }
@@ -106,16 +111,18 @@ public class VueSettingsPage implements Configurable {
 
     private void getVersion() {
         if (settings != null &&
-                areEqual(nodeInterpreterField, settings.node) &&
+                areEqual(nodeBinField, settings.node) &&
                 areEqual(vueBinField, settings.vueExePath) &&
                 settings.cwd.equals(project.getBasePath())
                 ) {
             return;
         }
         settings = new VueSettings();
-        settings.node = nodeInterpreterField.getChildComponent().getText();
+        settings.node = nodeBinField.getChildComponent().getText();
         settings.vueExePath = vueBinField.getChildComponent().getText();
+        settings.npmPath = npmBinField.getChildComponent().getText();
         settings.cwd = project.getBasePath();
+        settings.cwd = settings.cwd == null ? "." : settings.cwd;
         try {
             String version = VueRunner.runVersion(settings);
             versionLabel.setText("vue-cli version: " + version.trim());
@@ -131,28 +138,31 @@ public class VueSettingsPage implements Configurable {
         return textFieldWithHistory;
     }
 
+    private void configNpmBinField() {
+        TextFieldWithHistory textFieldWithHistory = configWithDefaults(npmBinField);
+        SwingHelper.addHistoryOnExpansion(textFieldWithHistory, () -> {
+            List<File> newFiles = VueFinder.searchNpmForBin(new File("."));
+            return FileUtils.toAbsolutePath(newFiles);
+        });
+        SwingHelper.installFileCompletionAndBrowseDialog(project, npmBinField, "Select Npm", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());
+    }
+
     private void configVueBinField() {
         configWithDefaults(vueBinField);
-        SwingHelper.addHistoryOnExpansion(vueBinField.getChildComponent(), new NotNullProducer<List<String>>() {
-            @NotNull
-            public List<String> produce() {
-                List<File> newFiles = VueFinder.searchForBin(getProjectPath());
-                return FileUtils.toAbsolutePath(newFiles);
-            }
+        SwingHelper.addHistoryOnExpansion(vueBinField.getChildComponent(), () -> {
+            List<File> newFiles = VueFinder.searchForBin(getProjectPath());
+            return FileUtils.toAbsolutePath(newFiles);
         });
-        SwingHelper.installFileCompletionAndBrowseDialog(project, vueBinField, "Select vue cli", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());
+        SwingHelper.installFileCompletionAndBrowseDialog(project, vueBinField, "Select Vue Cli", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());
     }
 
     private void configNodeField() {
-        TextFieldWithHistory textFieldWithHistory = configWithDefaults(nodeInterpreterField);
-        SwingHelper.addHistoryOnExpansion(textFieldWithHistory, new NotNullProducer<List<String>>() {
-            @NotNull
-            public List<String> produce() {
-                List<File> newFiles = NodeDetectionUtil.listAllPossibleNodeInterpreters();
-                return FileUtils.toAbsolutePath(newFiles);
-            }
+        TextFieldWithHistory textFieldWithHistory = configWithDefaults(nodeBinField);
+        SwingHelper.addHistoryOnExpansion(textFieldWithHistory, () -> {
+            List<File> newFiles = NodeDetectionUtil.listAllPossibleNodeInterpreters();
+            return FileUtils.toAbsolutePath(newFiles);
         });
-        SwingHelper.installFileCompletionAndBrowseDialog(project, nodeInterpreterField, "Select Node interpreter", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());
+        SwingHelper.installFileCompletionAndBrowseDialog(project, nodeBinField, "Select Node ", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());
     }
 
     @Nls
@@ -191,7 +201,8 @@ public class VueSettingsPage implements Configurable {
     public boolean isModified() {
         SettingStorage s = getSettings();
         return !areEqual(vueBinField, s.vueExePath) ||
-                !areEqual(nodeInterpreterField, s.nodeInterpreter);
+                !areEqual(nodeBinField, s.nodeExePath) ||
+                !areEqual(npmBinField, s.npmExePath);
     }
 
     @Override
@@ -204,7 +215,8 @@ public class VueSettingsPage implements Configurable {
     protected void saveSettings() {
         SettingStorage settingStorage = getSettings();
         settingStorage.vueExePath = vueBinField.getChildComponent().getText();
-        settingStorage.nodeInterpreter = nodeInterpreterField.getChildComponent().getText();
+        settingStorage.nodeExePath = nodeBinField.getChildComponent().getText();
+        settingStorage.npmExePath = npmBinField.getChildComponent().getText();
         VueProjectSettingsComponent component = project.getComponent(VueProjectSettingsComponent.class);
         if (component != null) component.validateSettings();
         DaemonCodeAnalyzer.getInstance(project).restart();
@@ -213,7 +225,8 @@ public class VueSettingsPage implements Configurable {
     protected void loadSettings() {
         SettingStorage settingStorage = getSettings();
         vueBinField.getChildComponent().setText(settingStorage.vueExePath);
-        nodeInterpreterField.getChildComponent().setText(settingStorage.nodeInterpreter);
+        nodeBinField.getChildComponent().setText(settingStorage.nodeExePath);
+        npmBinField.getChildComponent().setText(settingStorage.npmExePath);
     }
 
     @Override

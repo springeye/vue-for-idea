@@ -69,7 +69,7 @@ public class VueProjectSettingsComponent implements ProjectComponent {
     }
 
     public boolean validateSettings() {
-        boolean status = validateField("Node Interpreter", settingStorage.nodeInterpreter, true, false, true);
+        boolean status = validateField("Node Interpreter", settingStorage.nodeExePath, true, false, true);
         if (!status) {
             return false;
         }
@@ -87,7 +87,7 @@ public class VueProjectSettingsComponent implements ProjectComponent {
         }
 
         rtExecutable = settingStorage.vueExePath;
-        nodeInterpreter = settingStorage.nodeInterpreter;
+        nodeInterpreter = settingStorage.nodeExePath;
         treatAsWarnings = settingStorage.treatAllIssuesAsWarnings;
 
         settingValidStatus = true;
