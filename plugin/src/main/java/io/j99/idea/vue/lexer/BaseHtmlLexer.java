@@ -20,13 +20,12 @@ import com.intellij.lang.HtmlScriptContentProvider;
 import com.intellij.lang.Language;
 import com.intellij.lang.LanguageHtmlScriptContentProvider;
 import com.intellij.lang.css.CSSLanguage;
-import com.intellij.lang.html.HTMLLanguage;
 import com.intellij.lang.javascript.JavaScriptSupportLoader;
 import com.intellij.lang.javascript.JavascriptLanguage;
 import com.intellij.lexer.DelegateLexer;
 import com.intellij.lexer.EmbeddedTokenTypesProvider;
 import com.intellij.lexer.Lexer;
-import com.intellij.openapi.fileTypes.PlainTextLanguage;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.impl.source.tree.TreeUtil;
@@ -34,15 +33,16 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.xml.XmlTokenType;
 import com.intellij.util.text.CharArrayUtil;
-import com.intellij.xml.util.documentation.HtmlDescriptorsTable;
-import com.intellij.xml.util.documentation.MimeTypeDictionary;
 import org.coffeescript.CoffeeScriptLanguage;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.activation.MimetypesFileTypeMap;
-import java.util.*;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Maxim.Mossienko
@@ -91,8 +91,6 @@ abstract class BaseHtmlLexer extends DelegateLexer {
         private static final String TOKEN_SCRIPT = "script";
         @NonNls
         private static final String TOKEN_STYLE = "style";
-        @NonNls
-        private static final String TOKEN_ON = "on";
 
         @Override
         public void handleElement(Lexer lexer) {
@@ -110,7 +108,7 @@ abstract class BaseHtmlLexer extends DelegateLexer {
             @NonNls String attrName = TreeUtil.getTokenText(lexer);
             if (seenScript && !seenTag) {
                 seenContentType = false;
-                if (((firstCh == 'l' || firstCh == 't') || (caseInsensitive && (firstCh == 'L' || firstCh == 'T')))) {
+                if ((firstCh == 'l') || (caseInsensitive && (firstCh == 'L'))) {
                     seenContentType = Comparing.strEqual("lang", attrName, !caseInsensitive);
                     seenLangAttribute = true;
                 }
@@ -118,11 +116,9 @@ abstract class BaseHtmlLexer extends DelegateLexer {
             }
             if (seenStyle && !seenTag) {
                 seenStylesheetType = false;
-                if (firstCh == 'r' || caseInsensitive && firstCh == 'R') {
-                    seenStylesheetType = Comparing.strEqual(attrName, "rel", !caseInsensitive);
-                }
                 if (firstCh == 'l' || caseInsensitive && firstCh == 'L') {
-                    seenLangAttribute = Comparing.strEqual("lang", attrName, !caseInsensitive);
+                    seenStylesheetType = Comparing.strEqual("lang", attrName, !caseInsensitive);
+                    seenLangAttribute = true;
                 }
 
                 return;
@@ -139,9 +135,7 @@ abstract class BaseHtmlLexer extends DelegateLexer {
 
             final boolean style = name.equals(TOKEN_STYLE);
             final int state = getState() & BASE_STATE_MASK;
-            final boolean script = name.equals(TOKEN_SCRIPT) ||
-                    ((name.startsWith(TOKEN_ON) && name.indexOf(':') == -1 && !isHtmlTagState(state) &&
-                            HtmlDescriptorsTable.getAttributeDescriptor(name) != null));
+            final boolean script = name.equals(TOKEN_SCRIPT);
 
             if (style || script) {
                 // encountered tag name in end of tag
@@ -184,7 +178,7 @@ abstract class BaseHtmlLexer extends DelegateLexer {
                 @NonNls String mimeType = TreeUtil.getTokenText(lexer);
                 scriptType = caseInsensitive ? mimeType.toLowerCase(Locale.US) : mimeType;
             }
-            if (seenStyle && !seenAttribute) {
+            if (seenStylesheetType && seenStyle && !seenAttribute) {
                 @NonNls String lang = TreeUtil.getTokenText(lexer).trim();
                 styleType = caseInsensitive ? lang.toLowerCase(Locale.US) : lang;
             }
@@ -201,22 +195,15 @@ abstract class BaseHtmlLexer extends DelegateLexer {
     @Nullable
     protected Language getStyleLanguage() {
         if (ourDefaultStyleLanguage != null && styleType != null) {
-            String stylesheetPrefix = "text/";
+            String[] split = styleType.split("\\?");
+            if (split.length > 0) {
+                styleType = split[0];
+            }
             List<Language> dialects = ourDefaultStyleLanguage.getDialects();
             dialects.add(CSSLanguage.INSTANCE);
-            if (StringUtil.startsWith(styleType, stylesheetPrefix)) {
-                String languageName = styleType.substring(stylesheetPrefix.length()).trim();
-                for (Language language : dialects) {
-                    if (languageName.equals(language.getID().toLowerCase(Locale.US))) {
-                        return language;
-                    }
-                }
-
-            } else {
-                for (Language language : dialects) {
-                    if (styleType.equals(language.getID().toLowerCase(Locale.US))) {
-                        return language;
-                    }
+            for (Language language : dialects) {
+                if (styleType.equals(language.getID().toLowerCase(Locale.US))) {
+                    return language;
                 }
             }
         }
