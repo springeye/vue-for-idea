@@ -17,7 +17,19 @@
 ```
 https://plugins.jetbrains.com/plugins/alpha/8123
 ```
- 
+
+#How to build this plugin 
+```bash
+git checkout https://github.com/henjue/vue-for-idea.git -b develop
+```
+Run in Idea
+```bash
+./gradlew runIdea 
+```
+Build plugin jar library
+```bash
+./gradlew buildPlugin
+```
 ##Todo
 - [ ] Grammar
  - [x] highlighter
