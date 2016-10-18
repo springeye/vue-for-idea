@@ -15,7 +15,7 @@
 1. Use [the instructions](https://www.jetbrains.com/help/idea/2016.1/managing-enterprise-plugin-repositories.html?origin=old_help)
 2. Paste the URL 
 ```
-https://plugins.jetbrains.com/plugins/alpha/8123
+https://plugins.jetbrains.com/plugins/alpha/9188
 ```
 
 #How to build this plugin 
