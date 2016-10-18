@@ -1,5 +1,5 @@
 plugins {
-    id "org.jetbrains.intellij" version "0.0.43"
+    id "org.jetbrains.intellij" version "0.1.10"
 }
 apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
@@ -14,7 +14,7 @@ intellij {
     downloadSources false
     publish {
         username 'henjue'
-        pluginId '8123'
+        pluginId '9188'
         password Boolean.valueOf(System.getenv('CI')) ? System.getenv('PLUGIN_PASSWORD') : PLUGIN_PASSWORD
         channel System.getenv('PLUGIN_CHANNEL') ?: ''
     }
