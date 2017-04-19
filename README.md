@@ -9,7 +9,7 @@
 * [Node](https://nodejs.org)
 * [Vue-cli](https://github.com/vuejs/vue-cli)
 
-#Install the Plugin
+# Install the Plugin
  Click "Preferences"->"Plugins"->"Browse Repositories",search "vue-for-idea".
 ## Install the Plugin Alpha version:
 1. Use [the instructions](https://www.jetbrains.com/help/idea/2016.1/managing-enterprise-plugin-repositories.html?origin=old_help)
@@ -18,7 +18,7 @@
 https://plugins.jetbrains.com/plugins/alpha/9188
 ```
  
-##Todo
+## Todo
 - [ ] Grammar
  - [x] highlighter
  - [x] autocomplete
